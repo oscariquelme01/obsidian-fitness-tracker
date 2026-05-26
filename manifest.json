@@ -1,0 +1,11 @@
+{
+	"id": "workout-tracker",
+	"name": "Fitness tracker",
+	"version": "0.0.1",
+	"minAppVersion": "0.15.0",
+	"description": "Track your fitness in obsidian",
+	"author": "Oscar Riquelme Jato",
+	"authorUrl": "https://github.com/oscariquelme01/",
+	"fundingUrl": "https://obsidian.md/pricing",
+	"isDesktopOnly": false
+}
