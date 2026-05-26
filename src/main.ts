@@ -1,6 +1,7 @@
 import {Plugin} from 'obsidian';
 import { createExercise } from "exercises/create-exercise";
 import { openExerciseLibraryView } from "exercises/open-exercise-library-view";
+import { createTrainingSplit } from "training-splits/create-training-split";
 import {DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab} from "./settings/settings";
 import { setPluginContext } from "context";
 
@@ -24,6 +25,14 @@ export default class FitnessTrackerPlugin extends Plugin {
 			name: "Open exercise library view",
 			callback: () => {
 				void openExerciseLibraryView();
+			},
+		});
+
+		this.addCommand({
+			id: "create-training-split",
+			name: "Create training split",
+			callback: () => {
+				void createTrainingSplit();
 			},
 		});
 
