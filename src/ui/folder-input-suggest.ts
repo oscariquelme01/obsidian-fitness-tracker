@@ -1,5 +1,5 @@
-import { getApp } from "context";
-import { AbstractInputSuggest, App, TFolder } from "obsidian";
+import { AbstractInputSuggest, App } from "obsidian";
+import { getVaultFolders } from "utils/file-system";
 
 export class FolderInputSuggest extends AbstractInputSuggest<string> {
 	constructor(
@@ -13,7 +13,7 @@ export class FolderInputSuggest extends AbstractInputSuggest<string> {
 	getSuggestions(inputStr: string): string[] {
 		const query = inputStr.toLowerCase();
 
-		return this.getVaultFolders()
+		return getVaultFolders()
 			.filter((folder) => folder.toLowerCase().includes(query))
 			.slice(0, 20);
 	}
@@ -24,15 +24,7 @@ export class FolderInputSuggest extends AbstractInputSuggest<string> {
 
 	selectSuggestion(folder: string): void {
 		this.inputEl.value = folder;
+		this.close();
 		void this.onChooseFolder(folder);
-	}
-
-	private getVaultFolders(): string[] {
-		const app = getApp()
-		
-		return app.vault.getAllLoadedFiles()
-			.filter((file): file is TFolder => file instanceof TFolder)
-			.map((folder) => folder.path)
-			.sort((a, b) => a.localeCompare(b));
 	}
 }

@@ -1,6 +1,6 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
-import FitnessTrackerPlugin from "../main";
-import { FolderInputSuggest } from "./folder-input-suggest";
+import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
+import { getPlugin } from "context";
+import { FolderInputSuggest } from "ui/folder-input-suggest";
 
 export interface FitnessTrackerSettings {
 	exerciseLibraryFolder: string;
@@ -15,35 +15,33 @@ export const DEFAULT_SETTINGS: FitnessTrackerSettings = {
 };
 
 export class FitnessTrackerSettingTab extends PluginSettingTab {
-	plugin: FitnessTrackerPlugin;
-
-	constructor(app: App, plugin: FitnessTrackerPlugin) {
+	constructor(app: App, plugin: Plugin) {
 		super(app, plugin);
-		this.plugin = plugin;
 	}
 
 	display(): void {
 		const { containerEl } = this;
+		const plugin = getPlugin();
 
 		containerEl.empty();
 
 		this.addFolderSetting(containerEl, {
 			name: "Exercise library folder",
 			description: "Folder containing exercise definition notes.",
-			value: this.plugin.settings.exerciseLibraryFolder,
+			value: plugin.settings.exerciseLibraryFolder,
 			onChange: async (value) => {
-				this.plugin.settings.exerciseLibraryFolder = value;
-				await this.plugin.saveSettings();
+				plugin.settings.exerciseLibraryFolder = value;
+				await plugin.saveSettings();
 			},
 		});
 
 		this.addFolderSetting(containerEl, {
 			name: "Training split folder",
 			description: "Folder containing training split template notes.",
-			value: this.plugin.settings.trainingSplitFolder,
+			value: plugin.settings.trainingSplitFolder,
 			onChange: async (value) => {
-				this.plugin.settings.trainingSplitFolder = value;
-				await this.plugin.saveSettings();
+				plugin.settings.trainingSplitFolder = value;
+				await plugin.saveSettings();
 			},
 		});
 
@@ -51,10 +49,10 @@ export class FitnessTrackerSettingTab extends PluginSettingTab {
 			name: "Workout log folder",
 			description:
 				"Folder where generated workout log notes will be stored.",
-			value: this.plugin.settings.workoutLogFolder,
+			value: plugin.settings.workoutLogFolder,
 			onChange: async (value) => {
-				this.plugin.settings.workoutLogFolder = value;
-				await this.plugin.saveSettings();
+				plugin.settings.workoutLogFolder = value;
+				await plugin.saveSettings();
 			},
 		});
 	}
