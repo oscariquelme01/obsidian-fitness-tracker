@@ -1,7 +1,8 @@
-import { Notice, normalizePath, TFile, TFolder } from "obsidian";
+import { Notice, normalizePath, TFile } from "obsidian";
 import { getPlugin } from "context";
 import { promptForText } from "../ui/text-input-modal";
 import { createExerciseFileName, createExerciseNoteContent } from "./exercise-template";
+import { ensureFolder } from "utils/file-system";
 
 export async function createExercise(): Promise<void> {
 	const plugin = getPlugin();
@@ -44,26 +45,5 @@ export async function createExercise(): Promise<void> {
 	} catch (error) {
 		console.error(error);
 		new Notice("Failed to create exercise");
-	}
-}
-
-async function ensureFolder(folderPath: string): Promise<void> {
-	const plugin = getPlugin();
-	const pathParts = folderPath.split("/").filter(Boolean);
-	let currentPath = "";
-
-	for (const part of pathParts) {
-		currentPath = currentPath ? `${currentPath}/${part}` : part;
-		const existingFile = plugin.app.vault.getAbstractFileByPath(currentPath);
-
-		if (existingFile instanceof TFolder) {
-			continue;
-		}
-
-		if (existingFile) {
-			throw new Error(`Expected folder but found file: ${currentPath}`);
-		}
-
-		await plugin.app.vault.createFolder(currentPath);
 	}
 }

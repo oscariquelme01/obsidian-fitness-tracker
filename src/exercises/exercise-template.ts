@@ -13,17 +13,13 @@ export function createExerciseId(exerciseName: string): string {
 
 export function createExerciseNoteContent(exerciseName: string): string {
 	const exerciseId = createExerciseId(exerciseName);
-	const safeExerciseName = JSON.stringify(exerciseName);
 
 	return `---
-fitnessType: exercise
 exerciseId: ${exerciseId}
-exerciseName: ${safeExerciseName}
-exerciseKind: strength
-status: active
 primaryMuscles: []
 secondaryMuscles: []
 equipment: []
+optionalEquipment: []
 movementPattern:
 ---
 

@@ -30,3 +30,13 @@ export function getVaultFolders(): string[] {
 		.map((folder) => folder.path)
 		.sort((a, b) => a.localeCompare(b));
 }
+
+export function getParentFolder(folderPath: string): string {
+	const lastSlashIndex = folderPath.lastIndexOf("/");
+
+	if (lastSlashIndex === -1) {
+		return "";
+	}
+
+	return folderPath.slice(0, lastSlashIndex);
+}

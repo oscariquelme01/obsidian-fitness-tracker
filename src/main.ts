@@ -1,5 +1,6 @@
 import {Plugin} from 'obsidian';
 import { createExercise } from "exercises/create-exercise";
+import { openExerciseLibraryView } from "exercises/open-exercise-library-view";
 import {DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab} from "./settings/settings";
 import { setPluginContext } from "context";
 
@@ -15,6 +16,14 @@ export default class FitnessTrackerPlugin extends Plugin {
 			name: "Create exercise",
 			callback: () => {
 				void createExercise();
+			},
+		});
+
+		this.addCommand({
+			id: "open-exercise-library-view",
+			name: "Open exercise library view",
+			callback: () => {
+				void openExerciseLibraryView();
 			},
 		});
 
