@@ -5,6 +5,7 @@ import { ensureFolder, getLatestTrainingSplitFile } from "utils/file-system";
 import { createWorkoutLogNoteContent } from "./workout-log-template";
 import { formatDate } from "utils/dates";
 import { slugify } from "utils/strings";
+import { WORKOUT_LOG_VIEW_TYPE } from "./workout-log-view";
 
 const WEEK_DAYS = [
 	"Sunday",
@@ -51,7 +52,7 @@ export async function openTodaysWorkout(): Promise<void> {
 		const existingFile = plugin.app.vault.getAbstractFileByPath(workoutLogPath);
 
 		if (existingFile instanceof TFile) {
-			await plugin.app.workspace.getLeaf(false).openFile(existingFile);
+			await openWorkoutLogFile(existingFile);
 			return;
 		}
 
@@ -75,12 +76,19 @@ export async function openTodaysWorkout(): Promise<void> {
 			}),
 		);
 
-		await plugin.app.workspace.getLeaf(false).openFile(workoutFile);
+		await openWorkoutLogFile(workoutFile);
 		new Notice(`Created workout: ${fileName}`);
 	} catch (error) {
 		console.error(error);
 		new Notice("Failed to open today's workout");
 	}
+}
+
+async function openWorkoutLogFile(file: TFile): Promise<void> {
+	await getPlugin().app.workspace.getLeaf(false).setViewState({
+		type: WORKOUT_LOG_VIEW_TYPE,
+		state: { file: file.path },
+	});
 }
 
 function createWorkoutLogFileName(date: Date, workoutTitle: string): string {

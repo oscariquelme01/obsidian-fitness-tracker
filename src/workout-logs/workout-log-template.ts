@@ -22,6 +22,7 @@ export function createWorkoutLogNoteContent(data: WorkoutLogTemplateData): strin
 		: "No exercises scheduled.\n";
 
 	return `---
+fitnessType: workout-log
 workoutDate: ${workoutDate}
 sourceTrainingSplit: "[[${escapeDoubleQuotedString(data.sourceTrainingSplitName)}]]"
 scheduledDay: ${data.scheduledDay}
@@ -47,5 +48,5 @@ ${createSetRows(exercise.sets)}
 }
 
 function createSetRows(setCount: number): string {
-	return Array.from({ length: setCount }, (_, index) => `- Set ${index + 1}: weight= reps= rpe= notes=`).join("\n");
+	return Array.from({ length: setCount }, (_, index) => `- [ ] Set ${index + 1}: weight= reps= rpe= notes=`).join("\n");
 }
