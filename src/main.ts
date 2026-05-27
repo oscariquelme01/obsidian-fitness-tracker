@@ -2,6 +2,7 @@ import {Plugin, WorkspaceLeaf} from 'obsidian';
 import { createExercise } from "exercises/create-exercise";
 import { openExerciseLibraryView } from "exercises/open-exercise-library-view";
 import { createTrainingSplit } from "training-splits/create-training-split";
+import { TRAINING_SPLIT_VIEW_TYPE, TrainingSplitView } from "training-splits/training-split-view";
 import { openTodaysWorkout } from "workout-logs/open-todays-workout";
 import { WORKOUT_LOG_VIEW_TYPE, WorkoutLogView } from "workout-logs/workout-log-view";
 import {DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab} from "./settings/settings";
@@ -14,6 +15,7 @@ export default class FitnessTrackerPlugin extends Plugin {
 		setPluginContext(this);
 		await this.loadSettings();
 		this.registerView(WORKOUT_LOG_VIEW_TYPE, (leaf) => new WorkoutLogView(leaf));
+		this.registerView(TRAINING_SPLIT_VIEW_TYPE, (leaf) => new TrainingSplitView(leaf));
 		this.registerWorkoutLogAutoOpen();
 
 		this.addCommand({
@@ -77,9 +79,7 @@ export default class FitnessTrackerPlugin extends Plugin {
 		) {
 			const filePath = state.type === "markdown" ? state.state?.file as string | undefined : null;
 			const frontmatter = filePath ? plugin.app.metadataCache.getCache(filePath)?.frontmatter : null;
-			const nextState = frontmatter?.fitnessType === "workout-log"
-				? { ...state, type: WORKOUT_LOG_VIEW_TYPE }
-				: state;
+			const nextState = getFitnessViewState(state, frontmatter?.fitnessType);
 
 			return originalSetViewState.call(this, nextState, ...rest);
 		};
@@ -92,4 +92,16 @@ export default class FitnessTrackerPlugin extends Plugin {
 			}
 		});
 	}
+}
+
+function getFitnessViewState(state: any, fitnessType: string | undefined): any {
+	if (fitnessType === "workout-log") {
+		return { ...state, type: WORKOUT_LOG_VIEW_TYPE };
+	}
+
+	if (fitnessType === "training-split") {
+		return { ...state, type: TRAINING_SPLIT_VIEW_TYPE };
+	}
+
+	return state;
 }

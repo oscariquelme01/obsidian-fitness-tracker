@@ -11,14 +11,21 @@ export function createExerciseId(exerciseName: string): string {
 	return exerciseId || "exercise";
 }
 
-export function createExerciseNoteContent(exerciseName: string): string {
+export interface ExerciseNoteOptions {
+	primaryMuscles?: string[];
+	equipment?: string[];
+}
+
+export function createExerciseNoteContent(exerciseName: string, options: ExerciseNoteOptions = {}): string {
 	const exerciseId = createExerciseId(exerciseName);
+	const primaryMuscles = formatYamlList(options.primaryMuscles || []);
+	const equipment = formatYamlList(options.equipment || []);
 
 	return `---
 exerciseId: ${exerciseId}
-primaryMuscles: []
+primaryMuscles: ${primaryMuscles}
 secondaryMuscles: []
-equipment: []
+equipment: ${equipment}
 optionalEquipment: []
 movementPattern:
 ---
@@ -38,4 +45,10 @@ export function createExerciseFileName(exerciseName: string): string {
 		.trim()
 		.replace(/[\\/:*?"<>|]/g, "")
 		.replace(/\s+/g, " ") || "Exercise";
+}
+
+function formatYamlList(values: string[]): string {
+	const cleanValues = values.map((value) => value.trim()).filter(Boolean);
+
+	return cleanValues.length > 0 ? `[${cleanValues.join(", ")}]` : "[]";
 }

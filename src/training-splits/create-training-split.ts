@@ -2,6 +2,7 @@ import { getPlugin } from "context";
 import { Notice, normalizePath, TFile } from "obsidian";
 import { ensureFolder } from "utils/file-system";
 import { createTrainingSplitFileName, createTrainingSplitNoteContent } from "./training-split-template";
+import { TRAINING_SPLIT_VIEW_TYPE } from "./training-split-view";
 
 export async function createTrainingSplit(): Promise<void> {
 	const plugin = getPlugin();
@@ -16,7 +17,7 @@ export async function createTrainingSplit(): Promise<void> {
 		const existingFile = plugin.app.vault.getAbstractFileByPath(trainingSplitPath);
 
 		if (existingFile instanceof TFile) {
-			await plugin.app.workspace.getLeaf(false).openFile(existingFile);
+			await openTrainingSplitFile(existingFile);
 			new Notice(`Training split already exists: ${fileName}`);
 			return;
 		}
@@ -31,10 +32,17 @@ export async function createTrainingSplit(): Promise<void> {
 			createTrainingSplitNoteContent(now),
 		);
 
-		await plugin.app.workspace.getLeaf(false).openFile(file);
+		await openTrainingSplitFile(file);
 		new Notice(`Created training split: ${fileName}`);
 	} catch (error) {
 		console.error(error);
 		new Notice("Failed to create training split");
 	}
+}
+
+async function openTrainingSplitFile(file: TFile): Promise<void> {
+	await getPlugin().app.workspace.getLeaf(false).setViewState({
+		type: TRAINING_SPLIT_VIEW_TYPE,
+		state: { file: file.path },
+	});
 }
