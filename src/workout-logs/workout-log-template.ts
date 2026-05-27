@@ -10,12 +10,9 @@ export interface WorkoutLogExercise {
 export interface WorkoutLogTemplateData {
 	date: Date;
 	scheduledDay: string;
+	workoutTitle: string;
 	sourceTrainingSplitName: string;
 	exercises: WorkoutLogExercise[];
-}
-
-export function createWorkoutLogFileName(date: Date, scheduledDay: string): string {
-	return `${formatDate(date)} ${scheduledDay} workout`;
 }
 
 export function createWorkoutLogNoteContent(data: WorkoutLogTemplateData): string {
@@ -30,7 +27,7 @@ sourceTrainingSplit: "[[${escapeDoubleQuotedString(data.sourceTrainingSplitName)
 scheduledDay: ${data.scheduledDay}
 ---
 
-# ${data.scheduledDay} workout
+# ${data.workoutTitle}
 
 Source split: [[${data.sourceTrainingSplitName}]]
 
@@ -43,13 +40,12 @@ function createExerciseSection(exercise: WorkoutLogExercise): string {
 	return `### ${exercise.exerciseLink}
 
 Prescription: ${exercise.prescription}
+Notes:
 
-| Set | Weight | Reps | RPE | Notes |
-| --- | ---: | ---: | ---: | --- |
 ${createSetRows(exercise.sets)}
 `;
 }
 
 function createSetRows(setCount: number): string {
-	return Array.from({ length: setCount }, (_, index) => `| ${index + 1} |  |  |  |  |`).join("\n");
+	return Array.from({ length: setCount }, (_, index) => `- Set ${index + 1}: weight= reps= rpe= notes=`).join("\n");
 }

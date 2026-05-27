@@ -2,6 +2,7 @@ import {Plugin} from 'obsidian';
 import { createExercise } from "exercises/create-exercise";
 import { openExerciseLibraryView } from "exercises/open-exercise-library-view";
 import { createTrainingSplit } from "training-splits/create-training-split";
+import { openTodaysWorkout } from "workout-logs/open-todays-workout";
 import {DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab} from "./settings/settings";
 import { setPluginContext } from "context";
 
@@ -34,6 +35,18 @@ export default class FitnessTrackerPlugin extends Plugin {
 			callback: () => {
 				void createTrainingSplit();
 			},
+		});
+
+		this.addCommand({
+			id: "open-todays-workout",
+			name: "Open today's workout",
+			callback: () => {
+				void openTodaysWorkout();
+			},
+		});
+
+		this.addRibbonIcon("calendar-check", "Open today's workout", () => {
+			void openTodaysWorkout();
 		});
 
 		this.addSettingTab(new FitnessTrackerSettingTab(this.app, this));

@@ -1,5 +1,5 @@
 import { getApp, getPlugin } from "context";
-import { TFolder } from "obsidian";
+import { normalizePath, TFile, TFolder } from "obsidian";
 
 export async function ensureFolder(folderPath: string): Promise<void> {
 	const plugin = getPlugin();
@@ -39,4 +39,18 @@ export function getParentFolder(folderPath: string): string {
 	}
 
 	return folderPath.slice(0, lastSlashIndex);
+}
+
+function compareTrainingSplitsDescending(left: TFile, right: TFile): number {
+	return right.basename.localeCompare(left.basename);
+}
+
+export function getLatestTrainingSplitFile(): TFile | null {
+	const plugin = getPlugin();
+	const trainingSplitFolder = normalizePath(plugin.settings.trainingSplitFolder);
+	const trainingSplitFiles = plugin.app.vault.getFiles()
+		.filter((file) => file.parent?.path === trainingSplitFolder)
+		.filter((file) => /^Training-\d{4}-\d{2}-\d{2}$/.test(file.basename));
+
+	return trainingSplitFiles.sort(compareTrainingSplitsDescending)[0] || null;
 }

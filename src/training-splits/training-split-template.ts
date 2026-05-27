@@ -16,7 +16,7 @@ export function createTrainingSplitFileName(date: Date): string {
 
 export function createTrainingSplitNoteContent(date: Date): string {
 	const createdDate = formatDate(date);
-	const daySections = WEEK_DAYS.map((day) => `## ${day}\n`).join("\n");
+	const daySections = WEEK_DAYS.map((day) => `## ${day}: Workout title\n- [[Exercise name]] | 3 sets | 8 reps\n`).join("\n");
 
 	return `---
 fitnessType: training-split
@@ -25,6 +25,8 @@ created: ${createdDate}
 ---
 
 # Training split
+
+Use \`## Monday: Push day\` headings and exercise bullets formatted as \`- [[Exercise]] | 3 sets | 8 reps\`.
 
 ${daySections}`;
 }
