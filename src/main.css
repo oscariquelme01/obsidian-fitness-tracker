@@ -1,4 +1,4 @@
 @import "./shared/presentation/text-input-modal.css";
 @import "./shared/presentation/form-fields/text-input-field.css";
-@import "./workout-logs/presentation/workout-log-view.css";
+@import "./workouts/presentation/workout-view.css";
 @import "./training-splits/presentation/training-split-view.css";

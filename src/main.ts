@@ -3,8 +3,8 @@ import { createExercise } from "exercises/presentation/create-exercise";
 import { openExerciseLibraryView } from "exercises/presentation/open-exercise-library-view";
 import { createTrainingSplit } from "training-splits/presentation/create-training-split";
 import { TRAINING_SPLIT_VIEW_TYPE, TrainingSplitView } from "training-splits/presentation/training-split-view";
-import { openTodaysWorkout } from "workout-logs/presentation/open-todays-workout";
-import { WORKOUT_LOG_VIEW_TYPE, WorkoutLogView } from "workout-logs/presentation/workout-log-view";
+import { openTodaysWorkout } from "workouts/presentation/open-todays-workout";
+import { WORKOUT_VIEW_TYPE, WorkoutView } from "workouts/presentation/workout-view";
 import { DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab } from "./settings/settings";
 import { setPluginContext } from "shared/infrastructure/plugin-context";
 
@@ -14,9 +14,9 @@ export default class FitnessTrackerPlugin extends Plugin {
 	async onload() {
 		setPluginContext(this);
 		await this.loadSettings();
-		this.registerView(WORKOUT_LOG_VIEW_TYPE, (leaf) => new WorkoutLogView(leaf));
+		this.registerView(WORKOUT_VIEW_TYPE, (leaf) => new WorkoutView(leaf));
 		this.registerView(TRAINING_SPLIT_VIEW_TYPE, (leaf) => new TrainingSplitView(leaf));
-		this.registerWorkoutLogAutoOpen();
+		this.registerWorkoutAutoOpen();
 
 		this.addCommand({
 			id: "create-exercise",
@@ -68,7 +68,7 @@ export default class FitnessTrackerPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	private registerWorkoutLogAutoOpen(): void {
+	private registerWorkoutAutoOpen(): void {
 		// eslint-disable-next-line @typescript-eslint/unbound-method
 		const originalSetViewState = WorkspaceLeaf.prototype.setViewState;
 		const app = this.app;
@@ -98,7 +98,7 @@ export default class FitnessTrackerPlugin extends Plugin {
 
 function getFitnessViewState(state: ViewState, fitnessType: string | undefined): ViewState {
 	if (fitnessType === "workout-log") {
-		return { ...state, type: WORKOUT_LOG_VIEW_TYPE };
+		return { ...state, type: WORKOUT_VIEW_TYPE };
 	}
 
 	if (fitnessType === "training-split") {

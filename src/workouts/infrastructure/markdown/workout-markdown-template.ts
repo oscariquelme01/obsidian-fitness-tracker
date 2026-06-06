@@ -1,22 +1,22 @@
 import { formatDate } from "shared/domain/dates";
 import { escapeDoubleQuotedString } from "shared/domain/strings";
 
-export interface WorkoutLogExercise {
-	exerciseLink: string;
+export interface WorkoutExercise {
+	exerciseName: string;
 	prescription: string;
 	sets: number;
 }
 
-export interface WorkoutLogTemplateData {
+export interface WorkoutTemplateData {
 	date: Date;
 	scheduledDay: string;
 	workoutTitle: string;
 	sourceTrainingSplitPath: string;
 	sourceTrainingSplitName: string;
-	exercises: WorkoutLogExercise[];
+	exercises: WorkoutExercise[];
 }
 
-export function createWorkoutLogNoteContent(data: WorkoutLogTemplateData): string {
+export function createWorkoutNoteContent(data: WorkoutTemplateData): string {
 	const exerciseSections = data.exercises.length > 0
 		? data.exercises.map(createExerciseSection).join("\n")
 		: "No exercises scheduled.\n";
@@ -37,8 +37,8 @@ Source split: [[${data.sourceTrainingSplitName}]]
 ${exerciseSections}`;
 }
 
-function createExerciseSection(exercise: WorkoutLogExercise): string {
-	return `### ${exercise.exerciseLink}
+function createExerciseSection(exercise: WorkoutExercise): string {
+	return `### [[${exercise.exerciseName}]]
 
 Prescription: ${exercise.prescription}
 Notes:

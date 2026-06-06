@@ -1,4 +1,4 @@
-.fitness-tracker-workout-log-view {
+.fitness-tracker-workout-view {
 	padding: 18px;
 	overflow: auto;
 }
@@ -66,8 +66,8 @@
 	width: auto;
 }
 
-.fitness-tracker-workout-log-view input,
-.fitness-tracker-workout-log-view select {
+.fitness-tracker-workout-view input,
+.fitness-tracker-workout-view select {
 	width: 100%;
 }
 

@@ -1,24 +1,30 @@
 import {
-	WorkoutLog,
-	WorkoutLogExerciseEntry,
-	WorkoutLogFrontmatter,
-	WorkoutLogSetEntry,
-} from "../../domain/workout-log";
+	Workout,
+	WorkoutExercise,
+	WorkoutSet,
+} from "../../domain/workout";
 
-export function parseWorkoutLog(markdown: string): WorkoutLog {
+interface WorkoutMarkdownFrontmatter {
+	fitnessType: string;
+	workoutDate: string;
+	sourceTrainingSplit: string;
+	scheduledDay: string;
+}
+
+export function parseWorkout(markdown: string): Workout {
 	const lines = markdown.split("\n");
 	const frontmatter = parseFrontmatter(lines);
 	const title = lines.find((line) => line.startsWith("# "))?.replace(/^#\s+/, "").trim() || "Workout";
 	const sourceTrainingSplit = lines.find((line) => line.startsWith("Source split:"))
 		?.replace(/^Source split:\s*/, "")
 		.trim() || "";
-	const exercises: WorkoutLogExerciseEntry[] = [];
-	let currentExercise: WorkoutLogExerciseEntry | null = null;
+	const exercises: WorkoutExercise[] = [];
+	let currentExercise: WorkoutExercise | null = null;
 
 	for (const line of lines) {
 		if (line.startsWith("### ")) {
 			currentExercise = {
-				exerciseLink: line.replace(/^###\s+/, "").trim(),
+				exerciseName: parseExerciseName(line.replace(/^###\s+/, "").trim()),
 				prescription: "",
 				notes: "",
 				sets: [],
@@ -49,15 +55,22 @@ export function parseWorkoutLog(markdown: string): WorkoutLog {
 	}
 
 	return {
-		frontmatter,
+		date: frontmatter.workoutDate,
+		scheduledDay: frontmatter.scheduledDay,
 		title,
 		sourceTrainingSplit,
 		exercises,
 	};
 }
 
-function parseFrontmatter(lines: string[]): WorkoutLogFrontmatter {
-	const frontmatter: WorkoutLogFrontmatter = {
+function parseExerciseName(value: string): string {
+	const wikiLinkMatch = value.match(/^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$/);
+
+	return wikiLinkMatch?.[1]?.trim() || value;
+}
+
+function parseFrontmatter(lines: string[]): WorkoutMarkdownFrontmatter {
+	const frontmatter: WorkoutMarkdownFrontmatter = {
 		fitnessType: "workout-log",
 		workoutDate: "",
 		sourceTrainingSplit: "",
@@ -92,7 +105,7 @@ function parseFrontmatter(lines: string[]): WorkoutLogFrontmatter {
 	return frontmatter;
 }
 
-function parseSetLine(line: string): WorkoutLogSetEntry | null {
+function parseSetLine(line: string): WorkoutSet | null {
 	const match = line.match(/^[-*]\s+(?:\[([ xX])\]\s+)?Set\s+\d+:\s*weight=(.*?)\s+reps=(.*?)\s+rpe=(.*?)\s+notes=(.*)$/i);
 
 	if (!match) {

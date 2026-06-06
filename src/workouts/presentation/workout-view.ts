@@ -1,20 +1,20 @@
 //TODO: review this, this is vibecoded. For v1 is fine.
 
 import { Notice, TextFileView, WorkspaceLeaf } from "obsidian";
-import { parseWorkoutLog } from "../infrastructure/markdown/workout-log-markdown-parser";
-import { serializeWorkoutLog } from "../infrastructure/markdown/workout-log-markdown-serializer";
+import { parseWorkout } from "../infrastructure/markdown/workout-markdown-parser";
+import { serializeWorkout } from "../infrastructure/markdown/workout-markdown-serializer";
 import {
-	WorkoutLog,
-	WorkoutLogExerciseEntry,
-	WorkoutLogSetEntry,
-} from "../domain/workout-log";
+	Workout,
+	WorkoutExercise,
+	WorkoutSet,
+} from "../domain/workout";
 
-export const WORKOUT_LOG_VIEW_TYPE = "fitness-workout-log";
+export const WORKOUT_VIEW_TYPE = "fitness-workout";
 
 const RPE_OPTIONS = ["", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10"];
 
-export class WorkoutLogView extends TextFileView {
-	private workoutLog: WorkoutLog | null = null;
+export class WorkoutView extends TextFileView {
+	private workout: Workout | null = null;
 	private rawData = "";
 
 	constructor(leaf: WorkspaceLeaf) {
@@ -22,11 +22,11 @@ export class WorkoutLogView extends TextFileView {
 	}
 
 	getViewType(): string {
-		return WORKOUT_LOG_VIEW_TYPE;
+		return WORKOUT_VIEW_TYPE;
 	}
 
 	getDisplayText(): string {
-		return this.file?.basename || "Workout log";
+		return this.file?.basename || "Workout";
 	}
 
 	getIcon(): string {
@@ -34,12 +34,12 @@ export class WorkoutLogView extends TextFileView {
 	}
 
 	getViewData(): string {
-		return this.workoutLog ? serializeWorkoutLog(this.workoutLog) : this.rawData;
+		return this.workout ? serializeWorkout(this.workout) : this.rawData;
 	}
 
 	setViewData(data: string, clear: boolean): void {
 		this.rawData = data;
-		this.workoutLog = parseWorkoutLog(data);
+		this.workout = parseWorkout(data);
 
 		if (clear) {
 			this.contentEl.empty();
@@ -49,34 +49,34 @@ export class WorkoutLogView extends TextFileView {
 	}
 
 	clear(): void {
-		this.workoutLog = null;
+		this.workout = null;
 		this.rawData = "";
 		this.contentEl.empty();
 	}
 
 	private render(): void {
 		this.contentEl.empty();
-		this.contentEl.addClass("fitness-tracker-workout-log-view");
+		this.contentEl.addClass("fitness-tracker-workout-view");
 
-		if (!this.workoutLog) {
-			this.contentEl.createEl("p", { text: "No workout log loaded." });
+		if (!this.workout) {
+			this.contentEl.createEl("p", { text: "No workout loaded." });
 			return;
 		}
 
 		const header = this.contentEl.createDiv({ cls: "fitness-tracker-workout-header" });
-		header.createEl("h1", { text: this.workoutLog.title });
-		header.createEl("p", { text: `${this.workoutLog.frontmatter.scheduledDay} · ${this.workoutLog.frontmatter.workoutDate}` });
+		header.createEl("h1", { text: this.workout.title });
+		header.createEl("p", { text: `${this.workout.scheduledDay} · ${this.workout.date}` });
 
 		const exerciseList = this.contentEl.createDiv({ cls: "fitness-tracker-exercise-list" });
 
-		this.workoutLog.exercises.forEach((exercise, exerciseIndex) => {
+		this.workout.exercises.forEach((exercise, exerciseIndex) => {
 			this.renderExercise(exerciseList, exercise, exerciseIndex);
 		});
 
 		const addExerciseButton = this.contentEl.createEl("button", { text: "Add exercise" });
 		addExerciseButton.addEventListener("click", () => {
-			this.workoutLog?.exercises.push({
-				exerciseLink: "[[Exercise name]]",
+			this.workout?.exercises.push({
+				exerciseName: "Exercise name",
 				prescription: "",
 				notes: "",
 				sets: [{ completed: false, weight: "", reps: "", rpe: "", notes: "" }],
@@ -85,22 +85,22 @@ export class WorkoutLogView extends TextFileView {
 		});
 	}
 
-	private renderExercise(container: HTMLElement, exercise: WorkoutLogExerciseEntry, exerciseIndex: number): void {
+	private renderExercise(container: HTMLElement, exercise: WorkoutExercise, exerciseIndex: number): void {
 		const section = container.createDiv({ cls: "fitness-tracker-exercise" });
 		const heading = section.createDiv({ cls: "fitness-tracker-exercise-heading" });
 		const exerciseInput = heading.createEl("input", {
 			type: "text",
-			value: exercise.exerciseLink,
+			value: exercise.exerciseName,
 		});
 
 		exerciseInput.addEventListener("change", () => {
-			exercise.exerciseLink = exerciseInput.value.trim() || "[[Exercise name]]";
+			exercise.exerciseName = exerciseInput.value.trim() || "Exercise name";
 			this.saveOnly();
 		});
 
 		const removeExerciseButton = heading.createEl("button", { text: "Remove" });
 		removeExerciseButton.addEventListener("click", () => {
-			this.workoutLog?.exercises.splice(exerciseIndex, 1);
+			this.workout?.exercises.splice(exerciseIndex, 1);
 			this.saveAndRender();
 		});
 
@@ -126,8 +126,8 @@ export class WorkoutLogView extends TextFileView {
 
 	private renderSet(
 		container: HTMLElement,
-		exercise: WorkoutLogExerciseEntry,
-		set: WorkoutLogSetEntry,
+		exercise: WorkoutExercise,
+		set: WorkoutSet,
 		setIndex: number,
 	): void {
 		const row = container.createDiv({ cls: "fitness-tracker-set" });
@@ -208,12 +208,12 @@ export class WorkoutLogView extends TextFileView {
 	}
 
 	private saveOnly(): void {
-		if (!this.workoutLog) {
-			new Notice("No workout log loaded");
+		if (!this.workout) {
+			new Notice("No workout loaded");
 			return;
 		}
 
-		this.rawData = serializeWorkoutLog(this.workoutLog);
+		this.rawData = serializeWorkout(this.workout);
 		this.requestSave();
 	}
 }

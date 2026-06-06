@@ -2,48 +2,48 @@ import { App, normalizePath, TFile } from "obsidian";
 import { FitnessTrackerSettings } from "settings/settings";
 import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
 import { formatDate } from "shared/domain/dates";
-import { CreateWorkoutLogDto, CreateWorkoutLogResultDto } from "../application/workout-log-dtos";
-import { WorkoutLogRepository } from "../application/workout-log-repository";
-import { WorkoutLog } from "../domain/workout-log";
-import { parseWorkoutLog } from "./markdown/workout-log-markdown-parser";
-import { serializeWorkoutLog } from "./markdown/workout-log-markdown-serializer";
+import { CreateWorkoutDto, CreateWorkoutResultDto } from "../application/workout-dtos";
+import { WorkoutRepository } from "../application/workout-repository";
+import { Workout } from "../domain/workout";
+import { parseWorkout } from "./markdown/workout-markdown-parser";
+import { serializeWorkout } from "./markdown/workout-markdown-serializer";
 
-export class ObsidianWorkoutLogRepository implements WorkoutLogRepository {
+export class ObsidianWorkoutRepository implements WorkoutRepository {
 	constructor(
 		private readonly app: App,
 		private readonly settings: FitnessTrackerSettings,
 	) {}
 
-	async getByPath(path: string): Promise<WorkoutLog | null> {
+	async getByPath(path: string): Promise<Workout | null> {
 		const file = this.app.vault.getAbstractFileByPath(path);
 
 		if (!(file instanceof TFile)) {
 			return null;
 		}
 
-		return parseWorkoutLog(await this.app.vault.read(file));
+		return parseWorkout(await this.app.vault.read(file));
 	}
 
-	async save(path: string, workoutLog: WorkoutLog): Promise<void> {
+	async save(path: string, workout: Workout): Promise<void> {
 		const file = this.app.vault.getAbstractFileByPath(path);
 
 		if (!(file instanceof TFile)) {
-			throw new Error(`Workout log file not found: ${path}`);
+			throw new Error(`Workout file not found: ${path}`);
 		}
 
-		await this.app.vault.modify(file, serializeWorkoutLog(workoutLog));
+		await this.app.vault.modify(file, serializeWorkout(workout));
 	}
 
-	async getByDate(date: Date): Promise<CreateWorkoutLogResultDto | null> {
+	async getByDate(date: Date): Promise<CreateWorkoutResultDto | null> {
 		const datePrefix = formatDate(date);
-		const workoutLogFolder = normalizePath(this.settings.workoutLogFolder);
+		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 		const file = this.app.vault.getFiles()
-			.find((candidate) => candidate.parent?.path === workoutLogFolder && candidate.basename.startsWith(datePrefix));
+			.find((candidate) => candidate.parent?.path === workoutFolder && candidate.basename.startsWith(datePrefix));
 
 		return file ? { path: file.path, basename: file.basename, created: false } : null;
 	}
 
-	async create(dto: CreateWorkoutLogDto): Promise<CreateWorkoutLogResultDto> {
+	async create(dto: CreateWorkoutDto): Promise<CreateWorkoutResultDto> {
 		const normalizedPath = normalizePath(dto.path);
 		const folderPath = normalizedPath.slice(0, normalizedPath.lastIndexOf("/"));
 
@@ -58,7 +58,7 @@ export class ObsidianWorkoutLogRepository implements WorkoutLogRepository {
 		}
 
 		if (existingFile) {
-			throw new Error(`Cannot create workout log. Path already exists: ${normalizedPath}`);
+			throw new Error(`Cannot create workout. Path already exists: ${normalizedPath}`);
 		}
 
 		const file = await this.app.vault.create(normalizedPath, dto.markdown);
@@ -66,11 +66,11 @@ export class ObsidianWorkoutLogRepository implements WorkoutLogRepository {
 		return { path: file.path, basename: file.basename, created: true };
 	}
 
-	async list(): Promise<CreateWorkoutLogResultDto[]> {
-		const workoutLogFolder = normalizePath(this.settings.workoutLogFolder);
+	async list(): Promise<CreateWorkoutResultDto[]> {
+		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 
 		return this.app.vault.getFiles()
-			.filter((file) => file.parent?.path === workoutLogFolder)
+			.filter((file) => file.parent?.path === workoutFolder)
 			.map((file) => ({ path: file.path, basename: file.basename }));
 	}
 }
