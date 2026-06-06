@@ -1,3 +1,5 @@
+/* Generated from src/shared/presentation/index.css. Do not edit directly. */
+
 .fitness-tracker-modal-title {
 	margin: 0 0 18px;
 	font-size: 1.35rem;
@@ -22,24 +24,6 @@
 	padding: 0 16px;
 }
 
-.fitness-tracker-modal-field {
-	display: grid;
-	gap: 6px;
-	margin-bottom: 12px;
-}
-
-.fitness-tracker-modal-field label {
-	font-size: 0.85rem;
-	font-weight: 600;
-	color: var(--text-muted);
-}
-
-.fitness-tracker-modal-field input {
-	width: 100%;
-	height: 38px;
-	padding: 0 12px;
-}
-
 @media (max-width: 480px) {
 	.fitness-tracker-text-input-modal {
 		grid-template-columns: 1fr;
@@ -49,13 +33,24 @@
 		width: 100%;
 	}
 }
-
-.fitness-tracker-workout-log-view {
-	padding: 18px;
-	overflow: auto;
+.fitness-tracker-text-input-field {
+	display: grid;
+	gap: 6px;
+	margin-bottom: 12px;
 }
 
-.fitness-tracker-training-split-view {
+.fitness-tracker-text-input-field label {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.fitness-tracker-text-input-field input {
+	width: 100%;
+	height: 38px;
+	padding: 0 12px;
+}
+.fitness-tracker-workout-log-view {
 	padding: 18px;
 	overflow: auto;
 }
@@ -79,11 +74,6 @@
 	margin-bottom: 16px;
 }
 
-.fitness-tracker-training-day-list {
-	display: grid;
-	gap: 16px;
-}
-
 .fitness-tracker-exercise {
 	padding: 14px;
 	border: 1px solid var(--background-modifier-border);
@@ -91,41 +81,15 @@
 	background: var(--background-primary);
 }
 
-.fitness-tracker-training-day {
-	padding: 14px;
-	border: 1px solid var(--background-modifier-border);
-	border-radius: 10px;
-	background: var(--background-primary);
-}
-
 .fitness-tracker-exercise-heading,
-.fitness-tracker-set,
-.fitness-tracker-training-day-heading,
-.fitness-tracker-training-exercise,
-.fitness-tracker-training-day-actions {
+.fitness-tracker-set {
 	display: grid;
 	gap: 8px;
 	align-items: center;
 }
 
-.fitness-tracker-exercise-heading,
-.fitness-tracker-training-day-heading,
-.fitness-tracker-training-day-actions {
+.fitness-tracker-exercise-heading {
 	grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.fitness-tracker-training-day-heading h2 {
-	margin: 0;
-}
-
-.fitness-tracker-training-exercise-list {
-	display: grid;
-	gap: 8px;
-	margin: 12px 0;
-}
-
-.fitness-tracker-training-exercise {
-	grid-template-columns: minmax(140px, 2fr) minmax(70px, 0.6fr) minmax(90px, 1fr) auto;
 }
 
 .fitness-tracker-field {
@@ -155,9 +119,7 @@
 }
 
 .fitness-tracker-workout-log-view input,
-.fitness-tracker-workout-log-view select,
-.fitness-tracker-training-split-view input,
-.fitness-tracker-training-split-view select {
+.fitness-tracker-workout-log-view select {
 	width: 100%;
 }
 
@@ -166,14 +128,64 @@
 		grid-template-columns: 1fr 1fr;
 	}
 
+	.fitness-tracker-set span,
+	.fitness-tracker-set button {
+		grid-column: 1 / -1;
+	}
+}
+.fitness-tracker-training-split-view {
+	padding: 18px;
+	overflow: auto;
+}
+
+.fitness-tracker-training-day-list {
+	display: grid;
+	gap: 16px;
+}
+
+.fitness-tracker-training-day {
+	padding: 14px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	background: var(--background-primary);
+}
+
+.fitness-tracker-training-day-heading,
+.fitness-tracker-training-exercise,
+.fitness-tracker-training-day-actions {
+	display: grid;
+	gap: 8px;
+	align-items: center;
+}
+
+.fitness-tracker-training-day-heading,
+.fitness-tracker-training-day-actions {
+	grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.fitness-tracker-training-day-heading h2 {
+	margin: 0;
+}
+
+.fitness-tracker-training-exercise-list {
+	display: grid;
+	gap: 8px;
+	margin: 12px 0;
+}
+
+.fitness-tracker-training-exercise {
+	grid-template-columns: minmax(140px, 2fr) minmax(70px, 0.6fr) minmax(90px, 1fr) auto;
+}
+
+.fitness-tracker-training-split-view input,
+.fitness-tracker-training-split-view select {
+	width: 100%;
+}
+
+@media (max-width: 640px) {
 	.fitness-tracker-training-day-heading,
 	.fitness-tracker-training-exercise,
 	.fitness-tracker-training-day-actions {
 		grid-template-columns: 1fr;
-	}
-
-	.fitness-tracker-set span,
-	.fitness-tracker-set button {
-		grid-column: 1 / -1;
 	}
 }

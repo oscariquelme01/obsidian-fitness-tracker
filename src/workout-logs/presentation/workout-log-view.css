@@ -1,0 +1,83 @@
+.fitness-tracker-workout-log-view {
+	padding: 18px;
+	overflow: auto;
+}
+
+.fitness-tracker-workout-header {
+	margin-bottom: 20px;
+}
+
+.fitness-tracker-workout-header h1 {
+	margin-bottom: 4px;
+}
+
+.fitness-tracker-workout-header p {
+	margin: 0;
+	color: var(--text-muted);
+}
+
+.fitness-tracker-exercise-list {
+	display: grid;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.fitness-tracker-exercise {
+	padding: 14px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	background: var(--background-primary);
+}
+
+.fitness-tracker-exercise-heading,
+.fitness-tracker-set {
+	display: grid;
+	gap: 8px;
+	align-items: center;
+}
+
+.fitness-tracker-exercise-heading {
+	grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.fitness-tracker-field {
+	display: grid;
+	gap: 4px;
+	margin-top: 10px;
+}
+
+.fitness-tracker-field label {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.fitness-tracker-set-list {
+	display: grid;
+	gap: 8px;
+	margin: 12px 0;
+}
+
+.fitness-tracker-set {
+	grid-template-columns: auto auto minmax(72px, 1fr) minmax(72px, 1fr) minmax(88px, 1fr) minmax(96px, 1.5fr) auto;
+}
+
+.fitness-tracker-set input[type="checkbox"] {
+	width: auto;
+}
+
+.fitness-tracker-workout-log-view input,
+.fitness-tracker-workout-log-view select {
+	width: 100%;
+}
+
+@media (max-width: 640px) {
+	.fitness-tracker-set {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.fitness-tracker-set span,
+	.fitness-tracker-set button {
+		grid-column: 1 / -1;
+	}
+}

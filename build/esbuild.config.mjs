@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
-import { builtinModules } from 'node:module';
+import { builtinModules } from "node:module";
+import { buildStyles, watchStyles } from "./build-styles.mjs";
 
 const banner =
 `/*
@@ -9,7 +10,7 @@ if you want to view the source, please visit the github repository of this plugi
 */
 `;
 
-const prod = (process.argv[2] === "production");
+const prod = process.argv[2] === "production";
 
 const context = await esbuild.context({
 	banner: {
@@ -31,7 +32,8 @@ const context = await esbuild.context({
 		"@lezer/common",
 		"@lezer/highlight",
 		"@lezer/lr",
-		...builtinModules],
+		...builtinModules,
+	],
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",
@@ -42,8 +44,10 @@ const context = await esbuild.context({
 });
 
 if (prod) {
+	await buildStyles();
 	await context.rebuild();
 	process.exit(0);
 } else {
+	await watchStyles();
 	await context.watch();
 }
