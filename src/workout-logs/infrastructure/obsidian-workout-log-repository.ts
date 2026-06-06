@@ -2,8 +2,9 @@ import { App, normalizePath, TFile } from "obsidian";
 import { FitnessTrackerSettings } from "settings/settings";
 import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
 import { formatDate } from "shared/domain/dates";
-import { WorkoutLog, WorkoutLogFileRef } from "../domain/workout-log";
-import { WorkoutLogRepository } from "../domain/workout-log-repository";
+import { CreateWorkoutLogDto, CreateWorkoutLogResultDto } from "../application/workout-log-dtos";
+import { WorkoutLogRepository } from "../application/workout-log-repository";
+import { WorkoutLog } from "../domain/workout-log";
 import { parseWorkoutLog } from "./markdown/workout-log-markdown-parser";
 import { serializeWorkoutLog } from "./markdown/workout-log-markdown-serializer";
 
@@ -33,7 +34,7 @@ export class ObsidianWorkoutLogRepository implements WorkoutLogRepository {
 		await this.app.vault.modify(file, serializeWorkoutLog(workoutLog));
 	}
 
-	async getByDate(date: Date): Promise<WorkoutLogFileRef | null> {
+	async getByDate(date: Date): Promise<CreateWorkoutLogResultDto | null> {
 		const datePrefix = formatDate(date);
 		const workoutLogFolder = normalizePath(this.settings.workoutLogFolder);
 		const file = this.app.vault.getFiles()
@@ -42,8 +43,8 @@ export class ObsidianWorkoutLogRepository implements WorkoutLogRepository {
 		return file ? { path: file.path, basename: file.basename, created: false } : null;
 	}
 
-	async createFromMarkdown(path: string, markdown: string): Promise<WorkoutLogFileRef> {
-		const normalizedPath = normalizePath(path);
+	async create(dto: CreateWorkoutLogDto): Promise<CreateWorkoutLogResultDto> {
+		const normalizedPath = normalizePath(dto.path);
 		const folderPath = normalizedPath.slice(0, normalizedPath.lastIndexOf("/"));
 
 		if (folderPath) {
@@ -60,12 +61,12 @@ export class ObsidianWorkoutLogRepository implements WorkoutLogRepository {
 			throw new Error(`Cannot create workout log. Path already exists: ${normalizedPath}`);
 		}
 
-		const file = await this.app.vault.create(normalizedPath, markdown);
+		const file = await this.app.vault.create(normalizedPath, dto.markdown);
 
 		return { path: file.path, basename: file.basename, created: true };
 	}
 
-	async list(): Promise<WorkoutLogFileRef[]> {
+	async list(): Promise<CreateWorkoutLogResultDto[]> {
 		const workoutLogFolder = normalizePath(this.settings.workoutLogFolder);
 
 		return this.app.vault.getFiles()

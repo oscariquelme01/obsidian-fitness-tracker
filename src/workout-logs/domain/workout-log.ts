@@ -26,9 +26,3 @@ export interface WorkoutLogSetEntry {
 	rpe: string;
 	notes: string;
 }
-
-export interface WorkoutLogFileRef {
-	path: string;
-	basename: string;
-	created?: boolean;
-}
