@@ -1,6 +1,6 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
-import { getPlugin } from "context";
-import { FolderInputSuggest } from "ui/folder-input-suggest";
+import { getPlugin } from "shared/infrastructure/plugin-context";
+import { FolderInputSuggest } from "shared/presentation/folder-input-suggest";
 
 export interface FitnessTrackerSettings {
 	exerciseLibraryFolder: string;

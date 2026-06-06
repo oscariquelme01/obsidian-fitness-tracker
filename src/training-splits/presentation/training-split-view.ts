@@ -1,15 +1,15 @@
-import { getPlugin } from "context";
-import { createExerciseFileName, createExerciseNoteContent } from "exercises/exercise-template";
-import { promptForExercise } from "exercises/exercise-modal";
+import { getPlugin } from "shared/infrastructure/plugin-context";
+import { createExerciseFileName, createExerciseNoteContent } from "exercises/infrastructure/markdown/exercise-markdown-template";
+import { promptForExercise } from "exercises/presentation/exercise-modal";
 import { Notice, normalizePath, TextFileView, TFile, WorkspaceLeaf } from "obsidian";
-import { ensureFolder } from "utils/file-system";
+import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
+import { parseTrainingSplit } from "../infrastructure/markdown/training-split-markdown-parser";
+import { serializeTrainingSplit } from "../infrastructure/markdown/training-split-markdown-serializer";
 import {
-	parseTrainingSplit,
-	serializeTrainingSplit,
 	TrainingSplit,
 	TrainingSplitDay,
 	TrainingSplitExercise,
-} from "./training-split-model";
+} from "../domain/training-split";
 
 export const TRAINING_SPLIT_VIEW_TYPE = "fitness-training-split";
 
@@ -191,7 +191,8 @@ export class TrainingSplitView extends TextFileView {
 			if (!existingFile) {
 				await plugin.app.vault.create(
 					exercisePath,
-					createExerciseNoteContent(result.name, {
+					createExerciseNoteContent({
+						name: result.name,
 						primaryMuscles: result.primaryMuscles,
 						equipment: result.equipment,
 					}),

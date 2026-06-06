@@ -1,5 +1,5 @@
 import { AbstractInputSuggest, App } from "obsidian";
-import { getVaultFolders } from "utils/file-system";
+import { getVaultFolders } from "shared/infrastructure/obsidian-file-system";
 
 export class FolderInputSuggest extends AbstractInputSuggest<string> {
 	constructor(

@@ -1,4 +1,4 @@
-// TODO: for future me, harcoding a template in code is, to say the least, curious...
+import { CreateExerciseDto } from "../../application/exercise-dtos";
 
 export function createExerciseId(exerciseName: string): string {
 	const exerciseId = exerciseName
@@ -11,15 +11,10 @@ export function createExerciseId(exerciseName: string): string {
 	return exerciseId || "exercise";
 }
 
-export interface ExerciseNoteOptions {
-	primaryMuscles?: string[];
-	equipment?: string[];
-}
-
-export function createExerciseNoteContent(exerciseName: string, options: ExerciseNoteOptions = {}): string {
-	const exerciseId = createExerciseId(exerciseName);
-	const primaryMuscles = formatYamlList(options.primaryMuscles || []);
-	const equipment = formatYamlList(options.equipment || []);
+export function createExerciseNoteContent(input: CreateExerciseDto): string {
+	const exerciseId = createExerciseId(input.name);
+	const primaryMuscles = formatYamlList(input.primaryMuscles || []);
+	const equipment = formatYamlList(input.equipment || []);
 
 	return `---
 exerciseId: ${exerciseId}
@@ -30,7 +25,7 @@ optionalEquipment: []
 movementPattern:
 ---
 
-### ${exerciseName}
+### ${input.name}
 
 #### Notes
 

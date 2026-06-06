@@ -1,30 +1,30 @@
-import { formatDate } from "utils/dates";
-import { escapeDoubleQuotedString } from "utils/strings";
+import { formatDate } from "shared/domain/dates";
+import { escapeDoubleQuotedString } from "shared/domain/strings";
 
 export interface WorkoutLogExercise {
 	exerciseLink: string;
-	sets: number;
 	prescription: string;
+	sets: number;
 }
 
 export interface WorkoutLogTemplateData {
 	date: Date;
 	scheduledDay: string;
 	workoutTitle: string;
+	sourceTrainingSplitPath: string;
 	sourceTrainingSplitName: string;
 	exercises: WorkoutLogExercise[];
 }
 
 export function createWorkoutLogNoteContent(data: WorkoutLogTemplateData): string {
-	const workoutDate = formatDate(data.date);
 	const exerciseSections = data.exercises.length > 0
 		? data.exercises.map(createExerciseSection).join("\n")
 		: "No exercises scheduled.\n";
 
 	return `---
 fitnessType: workout-log
-workoutDate: ${workoutDate}
-sourceTrainingSplit: "[[${escapeDoubleQuotedString(data.sourceTrainingSplitName)}]]"
+workoutDate: ${formatDate(data.date)}
+sourceTrainingSplit: "${escapeDoubleQuotedString(data.sourceTrainingSplitPath)}"
 scheduledDay: ${data.scheduledDay}
 ---
 
@@ -48,5 +48,7 @@ ${createSetRows(exercise.sets)}
 }
 
 function createSetRows(setCount: number): string {
-	return Array.from({ length: setCount }, (_, index) => `- [ ] Set ${index + 1}: weight= reps= rpe= notes=`).join("\n");
+	return Array.from({ length: setCount }, (_, index) => {
+		return `- [ ] Set ${index + 1}: weight= reps= rpe= notes=`;
+	}).join("\n");
 }

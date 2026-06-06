@@ -1,5 +1,5 @@
-import { getApp, getPlugin } from "context";
 import { normalizePath, TFile, TFolder } from "obsidian";
+import { getApp, getPlugin } from "./plugin-context";
 
 export async function ensureFolder(folderPath: string): Promise<void> {
 	const plugin = getPlugin();
@@ -23,8 +23,8 @@ export async function ensureFolder(folderPath: string): Promise<void> {
 }
 
 export function getVaultFolders(): string[] {
-	const app = getApp()
-	
+	const app = getApp();
+
 	return app.vault.getAllLoadedFiles()
 		.filter((file): file is TFolder => file instanceof TFolder)
 		.map((folder) => folder.path)

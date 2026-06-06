@@ -1,13 +1,13 @@
 //TODO: review this, this is vibecoded. For v1 is fine.
 
 import { Notice, TextFileView, WorkspaceLeaf } from "obsidian";
+import { parseWorkoutLog } from "../infrastructure/markdown/workout-log-markdown-parser";
+import { serializeWorkoutLog } from "../infrastructure/markdown/workout-log-markdown-serializer";
 import {
-	parseWorkoutLog,
-	serializeWorkoutLog,
 	WorkoutLog,
 	WorkoutLogExerciseEntry,
 	WorkoutLogSetEntry,
-} from "./workout-log-model";
+} from "../domain/workout-log";
 
 export const WORKOUT_LOG_VIEW_TYPE = "fitness-workout-log";
 

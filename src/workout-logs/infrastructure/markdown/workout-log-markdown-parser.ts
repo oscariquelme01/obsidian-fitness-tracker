@@ -1,32 +1,9 @@
-// TODO: review this. this is vibecoded, fine for v1 tho
-export interface WorkoutLog {
-	frontmatter: WorkoutLogFrontmatter;
-	title: string;
-	sourceTrainingSplit: string;
-	exercises: WorkoutLogExerciseEntry[];
-}
-
-export interface WorkoutLogFrontmatter {
-	fitnessType: string;
-	workoutDate: string;
-	sourceTrainingSplit: string;
-	scheduledDay: string;
-}
-
-export interface WorkoutLogExerciseEntry {
-	exerciseLink: string;
-	prescription: string;
-	notes: string;
-	sets: WorkoutLogSetEntry[];
-}
-
-export interface WorkoutLogSetEntry {
-	completed: boolean;
-	weight: string;
-	reps: string;
-	rpe: string;
-	notes: string;
-}
+import {
+	WorkoutLog,
+	WorkoutLogExerciseEntry,
+	WorkoutLogFrontmatter,
+	WorkoutLogSetEntry,
+} from "../../domain/workout-log";
 
 export function parseWorkoutLog(markdown: string): WorkoutLog {
 	const lines = markdown.split("\n");
@@ -79,27 +56,6 @@ export function parseWorkoutLog(markdown: string): WorkoutLog {
 	};
 }
 
-export function serializeWorkoutLog(workoutLog: WorkoutLog): string {
-	const exerciseSections = workoutLog.exercises.length > 0
-		? workoutLog.exercises.map(serializeExercise).join("\n")
-		: "No exercises scheduled.\n";
-
-	return `---
-fitnessType: ${workoutLog.frontmatter.fitnessType || "workout-log"}
-workoutDate: ${workoutLog.frontmatter.workoutDate}
-sourceTrainingSplit: ${workoutLog.frontmatter.sourceTrainingSplit}
-scheduledDay: ${workoutLog.frontmatter.scheduledDay}
----
-
-# ${workoutLog.title}
-
-Source split: ${workoutLog.sourceTrainingSplit}
-
-## Exercises
-
-${exerciseSections}`;
-}
-
 function parseFrontmatter(lines: string[]): WorkoutLogFrontmatter {
 	const frontmatter: WorkoutLogFrontmatter = {
 		fitnessType: "workout-log",
@@ -150,18 +106,4 @@ function parseSetLine(line: string): WorkoutLogSetEntry | null {
 		rpe: match[4]?.trim() || "",
 		notes: match[5]?.trim() || "",
 	};
-}
-
-function serializeExercise(exercise: WorkoutLogExerciseEntry): string {
-	return `### ${exercise.exerciseLink}
-
-Prescription: ${exercise.prescription}
-Notes: ${exercise.notes}
-
-${exercise.sets.map(serializeSet).join("\n")}
-`;
-}
-
-function serializeSet(set: WorkoutLogSetEntry, index: number): string {
-	return `- [${set.completed ? "x" : " "}] Set ${index + 1}: weight=${set.weight} reps=${set.reps} rpe=${set.rpe} notes=${set.notes}`;
 }

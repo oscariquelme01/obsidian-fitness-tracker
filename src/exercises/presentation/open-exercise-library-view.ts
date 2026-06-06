@@ -1,7 +1,7 @@
-import { getPlugin } from "context";
+import { getPlugin } from "shared/infrastructure/plugin-context";
 import { Notice, normalizePath, TFile } from "obsidian";
-import { escapeDoubleQuotedString } from "utils/strings";
-import { ensureFolder, getParentFolder } from "utils/file-system";
+import { ensureFolder, getParentFolder } from "shared/infrastructure/obsidian-file-system";
+import { createExerciseLibraryViewContent } from "../infrastructure/markdown/exercise-library-view-markdown-template";
 
 const EXERCISE_LIBRARY_VIEW_FILE_NAME = "Excercise Library.base";
 
@@ -47,23 +47,4 @@ export async function openExerciseLibraryView(): Promise<void> {
 		console.error(error);
 		new Notice("Failed to open exercise library view");
 	}
-}
-
-function createExerciseLibraryViewContent(exerciseFolder: string): string {
-	return `views:
-  - type: table
-    name: Table
-    filters:
-      and:
-        - file.inFolder("${escapeDoubleQuotedString(exerciseFolder)}")
-    order:
-      - file.name
-      - movementPattern
-      - equipment
-      - primaryMuscles
-      - secondaryMuscles
-      - exerciseId
-    sort:
-      - property: movementPattern
-        direction: ASC`;
 }

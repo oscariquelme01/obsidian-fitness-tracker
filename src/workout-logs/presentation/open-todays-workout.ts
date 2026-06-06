@@ -1,10 +1,10 @@
-import { getPlugin } from "context";
+import { getPlugin } from "shared/infrastructure/plugin-context";
 import { Notice, normalizePath, TFile } from "obsidian";
-import { parseTrainingSplitDay } from "training-splits/training-split-parser";
-import { ensureFolder, getLatestTrainingSplitFile } from "utils/file-system";
-import { createWorkoutLogNoteContent } from "./workout-log-template";
-import { formatDate } from "utils/dates";
-import { slugify } from "utils/strings";
+import { parseTrainingSplitDay } from "training-splits/infrastructure/markdown/training-split-markdown-parser";
+import { ensureFolder, getLatestTrainingSplitFile } from "shared/infrastructure/obsidian-file-system";
+import { createWorkoutLogNoteContent } from "../infrastructure/markdown/workout-log-markdown-template";
+import { formatDate } from "shared/domain/dates";
+import { slugify } from "shared/domain/strings";
 import { WORKOUT_LOG_VIEW_TYPE } from "./workout-log-view";
 
 const WEEK_DAYS = [
@@ -67,6 +67,7 @@ export async function openTodaysWorkout(): Promise<void> {
 				date: today,
 				scheduledDay: todayName,
 				workoutTitle,
+				sourceTrainingSplitPath: latestTrainingSplit.path,
 				sourceTrainingSplitName: latestTrainingSplit.basename,
 				exercises: parsedDay.exercises.map((exercise) => ({
 					exerciseLink: exercise.exerciseLink,

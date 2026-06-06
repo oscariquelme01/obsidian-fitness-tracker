@@ -1,12 +1,12 @@
-import {Plugin, WorkspaceLeaf} from 'obsidian';
-import { createExercise } from "exercises/create-exercise";
-import { openExerciseLibraryView } from "exercises/open-exercise-library-view";
-import { createTrainingSplit } from "training-splits/create-training-split";
-import { TRAINING_SPLIT_VIEW_TYPE, TrainingSplitView } from "training-splits/training-split-view";
-import { openTodaysWorkout } from "workout-logs/open-todays-workout";
-import { WORKOUT_LOG_VIEW_TYPE, WorkoutLogView } from "workout-logs/workout-log-view";
-import {DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab} from "./settings/settings";
-import { setPluginContext } from "context";
+import { Plugin, ViewState, WorkspaceLeaf } from "obsidian";
+import { createExercise } from "exercises/presentation/create-exercise";
+import { openExerciseLibraryView } from "exercises/presentation/open-exercise-library-view";
+import { createTrainingSplit } from "training-splits/presentation/create-training-split";
+import { TRAINING_SPLIT_VIEW_TYPE, TrainingSplitView } from "training-splits/presentation/training-split-view";
+import { openTodaysWorkout } from "workout-logs/presentation/open-todays-workout";
+import { WORKOUT_LOG_VIEW_TYPE, WorkoutLogView } from "workout-logs/presentation/workout-log-view";
+import { DEFAULT_SETTINGS, FitnessTrackerSettings, FitnessTrackerSettingTab } from "./settings/settings";
+import { setPluginContext } from "shared/infrastructure/plugin-context";
 
 export default class FitnessTrackerPlugin extends Plugin {
 	settings: FitnessTrackerSettings;
@@ -69,19 +69,21 @@ export default class FitnessTrackerPlugin extends Plugin {
 	}
 
 	private registerWorkoutLogAutoOpen(): void {
+		// eslint-disable-next-line @typescript-eslint/unbound-method
 		const originalSetViewState = WorkspaceLeaf.prototype.setViewState;
-		const plugin = this;
+		const app = this.app;
 
 		const patchedSetViewState = function (
 			this: WorkspaceLeaf,
-			state: any,
-			...rest: any[]
+			state: ViewState,
+			eState?: unknown,
 		) {
-			const filePath = state.type === "markdown" ? state.state?.file as string | undefined : null;
-			const frontmatter = filePath ? plugin.app.metadataCache.getCache(filePath)?.frontmatter : null;
-			const nextState = getFitnessViewState(state, frontmatter?.fitnessType);
+			const filePath = state.type === "markdown" && typeof state.state?.file === "string" ? state.state.file : null;
+			const frontmatter = filePath ? app.metadataCache.getCache(filePath)?.frontmatter : null;
+			const fitnessType = typeof frontmatter?.fitnessType === "string" ? frontmatter.fitnessType : undefined;
+			const nextState = getFitnessViewState(state, fitnessType);
 
-			return originalSetViewState.call(this, nextState, ...rest);
+			return originalSetViewState.call(this, nextState, eState);
 		};
 
 		WorkspaceLeaf.prototype.setViewState = patchedSetViewState;
@@ -94,7 +96,7 @@ export default class FitnessTrackerPlugin extends Plugin {
 	}
 }
 
-function getFitnessViewState(state: any, fitnessType: string | undefined): any {
+function getFitnessViewState(state: ViewState, fitnessType: string | undefined): ViewState {
 	if (fitnessType === "workout-log") {
 		return { ...state, type: WORKOUT_LOG_VIEW_TYPE };
 	}
