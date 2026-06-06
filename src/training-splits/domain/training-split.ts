@@ -42,9 +42,3 @@ export interface ParsedTrainingSplitDayResult {
 	day: ParsedTrainingSplitDay | null;
 	warnings: TrainingSplitParseWarning[];
 }
-
-export interface TrainingSplitFileRef {
-	path: string;
-	basename: string;
-	created: boolean;
-}

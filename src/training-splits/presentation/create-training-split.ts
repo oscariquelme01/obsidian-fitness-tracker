@@ -10,7 +10,7 @@ export async function createTrainingSplit(): Promise<void> {
 	try {
 		const now = new Date();
 		const repository = new ObsidianTrainingSplitRepository(plugin.app, plugin.settings);
-		const fileRef = await createTrainingSplitUseCase(repository, now);
+		const fileRef = await createTrainingSplitUseCase(repository, { date: now });
 		const file = plugin.app.vault.getAbstractFileByPath(fileRef.path);
 
 		if (file instanceof TFile) {

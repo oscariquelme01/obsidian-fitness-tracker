@@ -1,9 +1,9 @@
-import { TrainingSplitFileRef } from "../domain/training-split";
-import { TrainingSplitRepository } from "../domain/training-split-repository";
+import { CreateTrainingSplitDto, CreateTrainingSplitResultDto } from "./training-split-dtos";
+import { TrainingSplitRepository } from "./training-split-repository";
 
 export async function createTrainingSplit(
 	repository: TrainingSplitRepository,
-	date: Date,
-): Promise<TrainingSplitFileRef> {
-	return repository.create(date);
+	dto: CreateTrainingSplitDto,
+): Promise<CreateTrainingSplitResultDto> {
+	return repository.create(dto);
 }
