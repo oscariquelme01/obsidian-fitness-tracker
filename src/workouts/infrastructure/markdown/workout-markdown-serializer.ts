@@ -13,7 +13,6 @@ return `---
 fitnessType: workout-log
 workoutDate: ${workout.date}
 sourceTrainingSplit: ${workout.sourceTrainingSplit}
-scheduledDay: ${workout.scheduledDay}
 ---
 
 # ${workout.title}

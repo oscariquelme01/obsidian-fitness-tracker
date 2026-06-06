@@ -1,5 +1,4 @@
 import { formatDate } from "shared/domain/dates";
-import { escapeDoubleQuotedString } from "shared/domain/strings";
 
 export interface WorkoutExercise {
 	exerciseName: string;
@@ -9,9 +8,7 @@ export interface WorkoutExercise {
 
 export interface WorkoutTemplateData {
 	date: Date;
-	scheduledDay: string;
 	workoutTitle: string;
-	sourceTrainingSplitPath: string;
 	sourceTrainingSplitName: string;
 	exercises: WorkoutExercise[];
 }
@@ -24,8 +21,6 @@ export function createWorkoutNoteContent(data: WorkoutTemplateData): string {
 	return `---
 fitnessType: workout-log
 workoutDate: ${formatDate(data.date)}
-sourceTrainingSplit: "${escapeDoubleQuotedString(data.sourceTrainingSplitPath)}"
-scheduledDay: ${data.scheduledDay}
 ---
 
 # ${data.workoutTitle}

@@ -5,6 +5,7 @@ import { formatDate } from "shared/domain/dates";
 import { CreateWorkoutDto, CreateWorkoutResultDto } from "../application/workout-dtos";
 import { WorkoutRepository } from "../application/workout-repository";
 import { Workout } from "../domain/workout";
+import { createWorkoutNoteContent } from "./markdown/workout-markdown-template";
 import { parseWorkout } from "./markdown/workout-markdown-parser";
 import { serializeWorkout } from "./markdown/workout-markdown-serializer";
 
@@ -44,12 +45,10 @@ export class ObsidianWorkoutRepository implements WorkoutRepository {
 	}
 
 	async create(dto: CreateWorkoutDto): Promise<CreateWorkoutResultDto> {
-		const normalizedPath = normalizePath(dto.path);
-		const folderPath = normalizedPath.slice(0, normalizedPath.lastIndexOf("/"));
+		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
+		await ensureFolder(workoutFolder);
 
-		if (folderPath) {
-			await ensureFolder(folderPath);
-		}
+		const normalizedPath = normalizePath(`${workoutFolder}/${dto.fileName}.md`);
 
 		const existingFile = this.app.vault.getAbstractFileByPath(normalizedPath);
 
@@ -61,7 +60,15 @@ export class ObsidianWorkoutRepository implements WorkoutRepository {
 			throw new Error(`Cannot create workout. Path already exists: ${normalizedPath}`);
 		}
 
-		const file = await this.app.vault.create(normalizedPath, dto.markdown);
+		const file = await this.app.vault.create(
+			normalizedPath,
+			createWorkoutNoteContent({
+				date: dto.date,
+				workoutTitle: dto.title,
+				sourceTrainingSplitName: dto.sourceTrainingSplitName,
+				exercises: dto.exercises,
+			}),
+		);
 
 		return { path: file.path, basename: file.basename, created: true };
 	}

@@ -1,6 +1,5 @@
 export interface Workout {
 	date: string;
-	scheduledDay: string;
 	title: string;
 	sourceTrainingSplit: string;
 	exercises: WorkoutExercise[];

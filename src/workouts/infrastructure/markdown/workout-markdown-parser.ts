@@ -8,7 +8,6 @@ interface WorkoutMarkdownFrontmatter {
 	fitnessType: string;
 	workoutDate: string;
 	sourceTrainingSplit: string;
-	scheduledDay: string;
 }
 
 export function parseWorkout(markdown: string): Workout {
@@ -56,7 +55,6 @@ export function parseWorkout(markdown: string): Workout {
 
 	return {
 		date: frontmatter.workoutDate,
-		scheduledDay: frontmatter.scheduledDay,
 		title,
 		sourceTrainingSplit,
 		exercises,
@@ -74,7 +72,6 @@ function parseFrontmatter(lines: string[]): WorkoutMarkdownFrontmatter {
 		fitnessType: "workout-log",
 		workoutDate: "",
 		sourceTrainingSplit: "",
-		scheduledDay: "",
 	};
 
 	if (lines[0] !== "---") {
@@ -97,7 +94,7 @@ function parseFrontmatter(lines: string[]): WorkoutMarkdownFrontmatter {
 		const key = line.slice(0, separatorIndex).trim();
 		const value = line.slice(separatorIndex + 1).trim();
 
-		if (key === "fitnessType" || key === "workoutDate" || key === "sourceTrainingSplit" || key === "scheduledDay") {
+		if (key === "fitnessType" || key === "workoutDate" || key === "sourceTrainingSplit") {
 			frontmatter[key] = value;
 		}
 	}

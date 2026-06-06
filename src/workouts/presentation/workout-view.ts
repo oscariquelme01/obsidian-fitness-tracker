@@ -65,7 +65,7 @@ export class WorkoutView extends TextFileView {
 
 		const header = this.contentEl.createDiv({ cls: "fitness-tracker-workout-header" });
 		header.createEl("h1", { text: this.workout.title });
-		header.createEl("p", { text: `${this.workout.scheduledDay} · ${this.workout.date}` });
+		header.createEl("p", { text: this.workout.date });
 
 		const exerciseList = this.contentEl.createDiv({ cls: "fitness-tracker-exercise-list" });
 
