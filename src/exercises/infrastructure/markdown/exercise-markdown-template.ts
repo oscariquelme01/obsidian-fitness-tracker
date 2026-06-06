@@ -1,4 +1,5 @@
 import { CreateExerciseDto } from "../../application/exercise-dtos";
+import { formatYamlList } from "shared/infrastructure/yaml-formatting";
 
 export function createExerciseId(exerciseName: string): string {
 	const exerciseId = exerciseName
@@ -40,10 +41,4 @@ export function createExerciseFileName(exerciseName: string): string {
 		.trim()
 		.replace(/[\\/:*?"<>|]/g, "")
 		.replace(/\s+/g, " ") || "Exercise";
-}
-
-function formatYamlList(values: string[]): string {
-	const cleanValues = values.map((value) => value.trim()).filter(Boolean);
-
-	return cleanValues.length > 0 ? `[${cleanValues.join(", ")}]` : "[]";
 }

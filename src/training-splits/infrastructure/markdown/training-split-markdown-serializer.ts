@@ -1,4 +1,5 @@
 import { TrainingSplit, TrainingSplitDay, TrainingSplitExercise } from "../../domain/training-split";
+import { formatYamlFrontmatter } from "shared/infrastructure/yaml-formatting";
 
 export function serializeTrainingSplit(split: TrainingSplit): string {
 	return `${serializeFrontmatter(split.frontmatter)}
@@ -13,7 +14,7 @@ ${split.days.map(serializeDay).join("\n")}`;
 function serializeFrontmatter(frontmatter: Record<string, string>): string {
 	const data = { ...frontmatter, fitnessType: frontmatter.fitnessType || "training-split" };
 
-	return `---\n${Object.entries(data).map(([key, value]) => `${key}: ${value}`).join("\n")}\n---`;
+	return formatYamlFrontmatter(data);
 }
 
 function serializeDay(day: TrainingSplitDay): string {
