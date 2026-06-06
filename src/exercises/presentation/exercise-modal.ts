@@ -1,4 +1,5 @@
 import { App, Modal } from "obsidian";
+import { createTextInputField } from "shared/presentation/form-fields/text-input-field";
 
 export interface ExerciseModalResult {
 	name: string;
@@ -26,9 +27,21 @@ export class ExerciseModal extends Modal {
 			text: "Create exercise",
 		});
 
-		this.nameInputEl = this.addTextInput("Exercise name", "Dumbbell bench press");
-		this.musclesInputEl = this.addTextInput("Primary muscles", "Chest, triceps");
-		this.equipmentInputEl = this.addTextInput("Equipment", "Dumbbells, bench");
+		this.nameInputEl = createTextInputField(this.contentEl, {
+			label: "Exercise name",
+			placeholder: "Dumbbell bench press",
+			onEnter: () => this.submit(),
+		});
+		this.musclesInputEl = createTextInputField(this.contentEl, {
+			label: "Primary muscles",
+			placeholder: "Chest, triceps",
+			onEnter: () => this.submit(),
+		});
+		this.equipmentInputEl = createTextInputField(this.contentEl, {
+			label: "Equipment",
+			placeholder: "Dumbbells, bench",
+			onEnter: () => this.submit(),
+		});
 
 		const submitButton = this.contentEl.createEl("button", {
 			cls: "fitness-tracker-text-input-submit",
@@ -46,21 +59,6 @@ export class ExerciseModal extends Modal {
 		if (!this.didSubmit) {
 			this.onSubmit(null);
 		}
-	}
-
-	private addTextInput(label: string, placeholder: string): HTMLInputElement {
-		const wrapper = this.contentEl.createDiv({ cls: "fitness-tracker-modal-field" });
-		wrapper.createEl("label", { text: label });
-		const inputEl = wrapper.createEl("input", { type: "text", placeholder });
-
-		inputEl.addEventListener("keydown", (event) => {
-			if (event.key === "Enter") {
-				event.preventDefault();
-				this.submit();
-			}
-		});
-
-		return inputEl;
 	}
 
 	private submit(): void {
