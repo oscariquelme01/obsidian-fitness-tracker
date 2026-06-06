@@ -19,6 +19,7 @@ export async function createExercise(): Promise<void> {
 	try {
 		const repository = new ObsidianExerciseRepository(plugin.app, plugin.settings);
 		const result = await createExerciseUseCase(repository, { name: exerciseName });
+
 		await plugin.app.workspace.openLinkText(result.exercise.name, "", false);
 		new Notice(result.created ? `Created exercise: ${exerciseName}` : `Exercise already exists: ${exerciseName}`);
 	} catch (error) {

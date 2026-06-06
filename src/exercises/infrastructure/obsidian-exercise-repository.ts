@@ -4,6 +4,7 @@ import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
 import { CreateExerciseDto, CreateExerciseResultDto } from "../application/exercise-dtos";
 import { ExerciseRepository } from "../application/exercise-repository";
 import { Exercise } from "../domain/exercise";
+import { parseExerciseFromMarkdownFile } from "./markdown/exercise-markdown-parser";
 import { createExerciseFileName, createExerciseNoteContent } from "./markdown/exercise-markdown-template";
 
 export class ObsidianExerciseRepository implements ExerciseRepository {
@@ -17,11 +18,7 @@ export class ObsidianExerciseRepository implements ExerciseRepository {
 
 		return this.app.vault.getFiles()
 			.filter((file) => file.parent?.path === exerciseFolder)
-			.map((file) => ({
-				name: file.basename,
-				primaryMuscles: [],
-				equipment: [],
-			}));
+			.map((file) => this.loadExerciseFromFile(file));
 	}
 
 	async create(input: CreateExerciseDto): Promise<CreateExerciseResultDto> {
@@ -33,7 +30,7 @@ export class ObsidianExerciseRepository implements ExerciseRepository {
 		const existingFile = this.app.vault.getAbstractFileByPath(exercisePath);
 
 		if (existingFile instanceof TFile) {
-			return { exercise: createExerciseFromFile(existingFile), created: false };
+			return { exercise: this.loadExerciseFromFile(existingFile), created: false };
 		}
 
 		if (existingFile) {
@@ -42,7 +39,14 @@ export class ObsidianExerciseRepository implements ExerciseRepository {
 
 		const file = await this.app.vault.create(exercisePath, createExerciseNoteContent(input));
 
-		return { exercise: createExerciseFromFile(file), created: true };
+		return {
+			exercise: {
+				name: file.basename,
+				primaryMuscles: input.primaryMuscles || [],
+				equipment: input.equipment || [],
+			},
+			created: true,
+		};
 	}
 
 	async getByName(name: string): Promise<Exercise | null> {
@@ -55,18 +59,12 @@ export class ObsidianExerciseRepository implements ExerciseRepository {
 			return null;
 		}
 
-		return {
-			name: file.basename,
-			primaryMuscles: [],
-			equipment: [],
-		};
+		return this.loadExerciseFromFile(file);
 	}
-}
 
-function createExerciseFromFile(file: TFile): Exercise {
-	return {
-		name: file.basename,
-		primaryMuscles: [],
-		equipment: [],
-	};
+	private loadExerciseFromFile(file: TFile): Exercise {
+		const frontmatter = this.app.metadataCache.getFileCache(file)?.frontmatter;
+
+		return parseExerciseFromMarkdownFile({ basename: file.basename, frontmatter });
+	}
 }

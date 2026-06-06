@@ -1,5 +1,6 @@
 import { CreateExerciseDto } from "../../application/exercise-dtos";
 import { formatYamlList } from "shared/infrastructure/yaml-formatting";
+import { EXERCISE_FRONTMATTER_PROPERTY } from "./exercise-frontmatter-properties";
 
 export function createExerciseId(exerciseName: string): string {
 	const exerciseId = exerciseName
@@ -18,12 +19,12 @@ export function createExerciseNoteContent(input: CreateExerciseDto): string {
 	const equipment = formatYamlList(input.equipment || []);
 
 	return `---
-exerciseId: ${exerciseId}
-primaryMuscles: ${primaryMuscles}
-secondaryMuscles: []
-equipment: ${equipment}
-optionalEquipment: []
-movementPattern:
+${EXERCISE_FRONTMATTER_PROPERTY.exerciseId}: ${exerciseId}
+${EXERCISE_FRONTMATTER_PROPERTY.primaryMuscles}: ${primaryMuscles}
+${EXERCISE_FRONTMATTER_PROPERTY.secondaryMuscles}: []
+${EXERCISE_FRONTMATTER_PROPERTY.equipment}: ${equipment}
+${EXERCISE_FRONTMATTER_PROPERTY.optionalEquipment}: []
+${EXERCISE_FRONTMATTER_PROPERTY.movementPattern}:
 ---
 
 ### ${input.name}

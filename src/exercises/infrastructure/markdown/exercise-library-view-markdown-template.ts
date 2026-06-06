@@ -1,4 +1,5 @@
 import { escapeDoubleQuotedString } from "shared/domain/strings";
+import { EXERCISE_FRONTMATTER_PROPERTY } from "./exercise-frontmatter-properties";
 
 export function createExerciseLibraryViewContent(exerciseFolder: string): string {
 	return `views:
@@ -9,12 +10,12 @@ export function createExerciseLibraryViewContent(exerciseFolder: string): string
         - file.inFolder("${escapeDoubleQuotedString(exerciseFolder)}")
     order:
       - file.name
-      - movementPattern
-      - equipment
-      - primaryMuscles
-      - secondaryMuscles
-      - exerciseId
+      - ${EXERCISE_FRONTMATTER_PROPERTY.movementPattern}
+      - ${EXERCISE_FRONTMATTER_PROPERTY.equipment}
+      - ${EXERCISE_FRONTMATTER_PROPERTY.primaryMuscles}
+      - ${EXERCISE_FRONTMATTER_PROPERTY.secondaryMuscles}
+      - ${EXERCISE_FRONTMATTER_PROPERTY.exerciseId}
     sort:
-      - property: movementPattern
+      - property: ${EXERCISE_FRONTMATTER_PROPERTY.movementPattern}
         direction: ASC`;
 }
