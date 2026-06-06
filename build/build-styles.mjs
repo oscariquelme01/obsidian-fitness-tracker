@@ -3,7 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
-const sourceFile = "src/shared/presentation/index.css";
+const sourceFile = "src/main.css";
 const outputFile = "styles.css";
 
 async function resolveCssImports(filePath, seen = new Set()) {
