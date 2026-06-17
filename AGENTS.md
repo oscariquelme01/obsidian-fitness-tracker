@@ -6,6 +6,53 @@
 - Entry point: `main.ts` compiled to `main.js` and loaded by Obsidian.
 - Required release artifacts: `main.js`, `manifest.json`, and optional `styles.css`.
 
+## Agent workflow
+
+- Read this file before making code changes or launching subagents.
+- Preserve user changes in the worktree. Do not revert unrelated edits.
+- Make the smallest correct change that satisfies the task.
+- Do not introduce backward-compatibility layers unless persisted data, shipped behavior, external consumers, or explicit user requirements need them.
+- Prefer single-purpose files with clear module boundaries over broad collection files.
+- Avoid extracting tiny helpers unless they are reused or materially improve readability.
+- Verify meaningful changes with `npm run build` and `npm run lint` when feasible.
+
+## Project architecture
+
+- Source code lives in `src/` and is organized by feature and layer.
+- Keep `main.ts` minimal and focused on plugin lifecycle, view registration, and command registration.
+- Domain code must stay pure. Do not import Obsidian, DOM, infrastructure, or presentation code from domain modules.
+- Application code owns use cases and ports. It may import domain code, but it must not import infrastructure or presentation.
+- Repository contracts belong in application when they are shaped around use cases or DTOs.
+- Infrastructure implements application ports and handles Obsidian APIs, vault IO, Markdown parsing, Markdown serialization, templates, and filesystem details.
+- Presentation owns Obsidian views, modals, commands, DOM rendering, and notices. Presentation may compose application, infrastructure, domain, and shared code.
+- Shared infrastructure belongs under `src/shared/infrastructure/` only when it is genuinely reusable across features.
+- Do not leak Markdown-specific concepts such as `frontmatter`, wikilink syntax, or file paths into domain objects unless the domain truly owns the concept.
+
+## Current domain conventions
+
+- Keep Markdown-backed notes as the persistence format for portability outside Obsidian.
+- `Exercise` domain objects should use user-facing exercise data such as `name`, `primaryMuscles`, and `equipment`; do not add file names or links to the domain model.
+- `Workout` domain objects should use exercise names, not Markdown exercise links.
+- Keep persisted `fitnessType: workout-log` unless a migration is explicitly requested.
+- Keep existing setting names such as `workoutLogFolder` unless a migration is explicitly requested.
+- Use `CommandDto` for use-case input and `Create*Dto` for repository/persistence payloads.
+- Preferred DTO names include `CreateExerciseDto`, `CreateExerciseResultDto`, `CreateTrainingSplitDto`, `CreateTrainingSplitResultDto`, `CreateWorkoutCommandDto`, `CreateWorkoutDto`, and `CreateWorkoutResultDto`.
+- Keep repositories receiving `app` and `settings` for now; do not pass the whole plugin instance into repositories.
+
+## UI and styles
+
+- Do not add React unless it is explicitly requested or clearly justified for a specific presentation feature.
+- Use structured DOM presentation components for the current UI.
+- Preserve the compact, mobile-first workout layout.
+- Avoid swipe gestures for destructive workout actions because they conflict with Obsidian mobile gestures.
+- Source CSS belongs near components/views and is imported from `src/main.css`.
+- Root `styles.css` is generated. Edit source CSS files instead of editing root `styles.css` directly.
+
+## Generated files
+
+- Do not treat `main.js`, root `styles.css`, `data.json`, or `node_modules/` as source files.
+- Build tooling lives under `build/`; generated release artifacts are emitted at the plugin root for Obsidian.
+
 ## Environment & tooling
 
 - Node.js: use current LTS (Node 18+ recommended).
