@@ -36,13 +36,14 @@
 - Keep persisted `fitnessType: workout-log` unless a migration is explicitly requested.
 - Keep existing setting names such as `workoutLogFolder` unless a migration is explicitly requested.
 - Use `CommandDto` for use-case input and `Create*Dto` for repository/persistence payloads.
-- Preferred DTO names include `CreateExerciseDto`, `CreateExerciseResultDto`, `CreateTrainingSplitDto`, `CreateTrainingSplitResultDto`, `CreateWorkoutCommandDto`, `CreateWorkoutDto`, and `CreateWorkoutResultDto`.
+- Preferred DTO names include `CreateExerciseDto`, `CreateExerciseResultDto`, `CreateTrainingSplitDto`, `CreateTrainingSplitResultDto`, `CreateWorkoutCommandDto`, `CreateWorkoutDto`, and `WorkoutFileDto`.
 - Keep repositories receiving `app` and `settings` for now; do not pass the whole plugin instance into repositories.
 
 ## UI and styles
 
-- Do not add React unless it is explicitly requested or clearly justified for a specific presentation feature.
-- Use structured DOM presentation components for the current UI.
+- React is acceptable for complex presentation features, especially workout logging interactions and analytics/dashboard views.
+- Keep React presentation-only. Do not import React from domain, application, or infrastructure modules.
+- Simple Obsidian modals, commands, settings, and small static views may continue using Obsidian DOM helpers.
 - Preserve the compact, mobile-first workout layout.
 - Avoid swipe gestures for destructive workout actions because they conflict with Obsidian mobile gestures.
 - Source CSS belongs near components/views and is imported from `src/main.css`.

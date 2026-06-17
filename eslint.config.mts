@@ -13,7 +13,8 @@ export default tseslint.config(
 				projectService: {
 					allowDefaultProject: [
 						'eslint.config.js',
-						'manifest.json'
+						'manifest.json',
+						'tests/workouts/infrastructure/markdown/*.ts'
 					]
 				},
 				tsconfigRootDir: import.meta.dirname,
@@ -22,9 +23,17 @@ export default tseslint.config(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		files: ["tests/**/*.ts"],
+		rules: {
+			"import/no-nodejs-modules": "off",
+			"@typescript-eslint/no-floating-promises": "off",
+		},
+	},
 	globalIgnores([
 		"node_modules",
 		"dist",
+		".test-build",
 		"esbuild.config.mjs",
 		"eslint.config.js",
 		"version-bump.mjs",

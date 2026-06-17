@@ -2,7 +2,7 @@ import { App, normalizePath, TFile } from "obsidian";
 import { FitnessTrackerSettings } from "settings/settings";
 import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
 import { formatDate } from "shared/domain/dates";
-import { CreateWorkoutDto, CreateWorkoutResultDto } from "../application/workout-dtos";
+import { CreateWorkoutDto, WorkoutFileDto } from "../application/workout-dtos";
 import { WorkoutRepository } from "../application/workout-repository";
 import { Workout } from "../domain/workout";
 import { createWorkoutNoteContent } from "./markdown/workout-markdown-template";
@@ -35,7 +35,7 @@ export class ObsidianWorkoutRepository implements WorkoutRepository {
 		await this.app.vault.modify(file, serializeWorkout(workout));
 	}
 
-	async getByDate(date: Date): Promise<CreateWorkoutResultDto | null> {
+	async getByDate(date: Date): Promise<WorkoutFileDto | null> {
 		const datePrefix = formatDate(date);
 		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 		const file = this.app.vault.getFiles()
@@ -44,7 +44,7 @@ export class ObsidianWorkoutRepository implements WorkoutRepository {
 		return file ? { path: file.path, basename: file.basename, created: false } : null;
 	}
 
-	async create(dto: CreateWorkoutDto): Promise<CreateWorkoutResultDto> {
+	async create(dto: CreateWorkoutDto): Promise<WorkoutFileDto> {
 		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 		await ensureFolder(workoutFolder);
 
@@ -73,7 +73,7 @@ export class ObsidianWorkoutRepository implements WorkoutRepository {
 		return { path: file.path, basename: file.basename, created: true };
 	}
 
-	async list(): Promise<CreateWorkoutResultDto[]> {
+	async list(): Promise<WorkoutFileDto[]> {
 		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 
 		return this.app.vault.getFiles()

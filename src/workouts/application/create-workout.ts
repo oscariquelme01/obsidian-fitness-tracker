@@ -2,7 +2,7 @@ import { TrainingSplitRepository } from "training-splits/application/training-sp
 import { formatDate } from "shared/domain/dates";
 import { getWeekdayName } from "shared/domain/weekdays";
 import { slugify } from "shared/domain/strings";
-import { CreateWorkoutCommandDto, CreateWorkoutResultDto } from "./workout-dtos";
+import { CreateWorkoutCommandDto, WorkoutFileDto } from "./workout-dtos";
 import { WorkoutRepository } from "./workout-repository";
 
 interface CreateWorkoutDependencies {
@@ -13,7 +13,7 @@ interface CreateWorkoutDependencies {
 export async function createWorkout(
 	command: CreateWorkoutCommandDto,
 	dependencies: CreateWorkoutDependencies,
-): Promise<CreateWorkoutResultDto | null> {
+): Promise<WorkoutFileDto | null> {
 	const existingWorkout = await dependencies.workoutRepository.getByDate(command.date);
 
 	if (existingWorkout) {

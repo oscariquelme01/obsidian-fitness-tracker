@@ -16,7 +16,7 @@ export interface CreateWorkoutExerciseDto {
 	prescription: string;
 }
 
-export interface CreateWorkoutResultDto {
+export interface WorkoutFileDto {
 	path: string;
 	basename: string;
 	created?: boolean;
