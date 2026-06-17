@@ -1,11 +1,11 @@
 import type { Workout } from "workouts/domain/workout";
-import { WorkoutExerciseRow } from "./workout-exercise";
+import { WorkoutExerciseComponent } from "./workout-exercise";
 
-interface WorkoutComponentProps {
+interface Props {
 	workout: Workout | null;
 }
 
-export function WorkoutComponent({ workout }: WorkoutComponentProps) {
+export function WorkoutComponent({ workout }: Props) {
 	if (!workout) {
 		return <p>Loading workout...</p>;
 	}
@@ -13,31 +13,19 @@ export function WorkoutComponent({ workout }: WorkoutComponentProps) {
 	return (
 		<section>
 			<header>
-				<h1>{workout.title}</h1>
-				<p>{workout.date}</p>
+				<h3>
+					{workout.title} - {workout.date}
+				</h3>
 			</header>
 
-			<table>
-				<thead>
-					<tr>
-						<th scope="col">Exercise</th>
-						<th scope="col">Prescription</th>
-						<th scope="col">Sets</th>
-						<th scope="col">Notes</th>
-					</tr>
-				</thead>
-				<tbody>
-					{workout.exercises.length > 0 ? (
-						workout.exercises.map((exercise) => (
-							<WorkoutExerciseRow key={exercise.exerciseName} exercise={exercise} />
-						))
-					) : (
-						<tr>
-							<td colSpan={4}>No exercises scheduled.</td>
-						</tr>
-					)}
-				</tbody>
-			</table>
+			{workout.exercises.length > 0 ? (
+				workout.exercises.map((exercise) => (
+					<WorkoutExerciseComponent
+						key={exercise.exerciseName}
+						exercise={exercise}
+					/>
+				))
+			) : 'No Excercise Scheduled'}
 		</section>
 	);
 }

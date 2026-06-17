@@ -2,6 +2,8 @@ import { watch } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import postcss from "postcss";
+import tailwindcss from "tailwindcss";
 
 const sourceFile = "src/main.css";
 const outputFile = "styles.css";
@@ -35,7 +37,12 @@ async function resolveCssImports(filePath, seen = new Set()) {
 }
 
 export async function buildStyles() {
-	const styles = await resolveCssImports(sourceFile);
+	const sourceStyles = await resolveCssImports(sourceFile);
+	const result = await postcss([
+		tailwindcss("./tailwind.config.cjs"),
+	]).process(sourceStyles, { from: sourceFile, to: outputFile });
+	const styles = result.css;
+
 	await writeFile(
 		outputFile,
 		`/* Generated from ${sourceFile}. Do not edit directly. */\n\n${styles}\n`,
@@ -47,7 +54,7 @@ export async function watchStyles() {
 	let timeout = null;
 
 	watch("src", { recursive: true }, (eventType, filename) => {
-		if (!filename?.endsWith(".css")) {
+		if (!filename || !/\.(css|ts|tsx)$/.test(filename)) {
 			return;
 		}
 
