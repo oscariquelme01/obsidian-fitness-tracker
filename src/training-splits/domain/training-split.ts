@@ -11,7 +11,7 @@ export interface TrainingSplitDay {
 }
 
 export interface TrainingSplitExercise {
-	exerciseLink: string;
+	exerciseName: string;
 	sets: string;
 	reps: string;
 	extraFields: string[];
@@ -26,7 +26,6 @@ export interface ParsedTrainingSplitDay {
 
 export interface ParsedTrainingSplitExercise {
 	lineNumber: number;
-	exerciseLink: string;
 	exerciseName: string;
 	sets: number;
 	reps: string | null;

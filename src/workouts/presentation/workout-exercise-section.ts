@@ -5,15 +5,41 @@ export interface WorkoutExerciseSectionOptions {
 	container: HTMLElement;
 	exercise: WorkoutExercise;
 	exerciseIndex: number;
+	isDragging: boolean;
 	onChange: () => void;
 	onRenderRequired: () => void;
 	onRemove: () => void;
+	onDragStart: (exerciseIndex: number) => void;
+	onDragEnter: (exerciseIndex: number) => void;
+	onDragEnd: () => void;
 }
 
 export function renderWorkoutExerciseSection(options: WorkoutExerciseSectionOptions): void {
 	const section = options.container.createDiv({ cls: "fitness-tracker-exercise" });
-	const heading = section.createDiv({ cls: "fitness-tracker-exercise-heading" });
-	const exerciseInput = heading.createEl("input", {
+	section.draggable = options.isDragging;
+	section.addEventListener("dragstart", (event) => {
+		if (!options.isDragging) {
+			event.preventDefault();
+			return;
+		}
+
+		event.dataTransfer?.setData("text/plain", String(options.exerciseIndex));
+		options.onDragStart(options.exerciseIndex);
+	});
+	section.addEventListener("dragenter", (event) => {
+		event.preventDefault();
+		options.onDragEnter(options.exerciseIndex);
+	});
+	section.addEventListener("dragover", (event) => event.preventDefault());
+	section.addEventListener("dragend", options.onDragEnd);
+
+	const heading = section.createDiv({ cls: "fitness-tracker-exercise-header" });
+	const dragHandle = heading.createEl("button", { cls: "fitness-tracker-exercise-handle", text: "⋮⋮" });
+	dragHandle.addEventListener("pointerdown", () => options.onDragStart(options.exerciseIndex));
+
+	const titleGroup = heading.createDiv({ cls: "fitness-tracker-exercise-title-group" });
+	const exerciseInput = titleGroup.createEl("input", {
+		cls: "fitness-tracker-exercise-name",
 		type: "text",
 		value: options.exercise.exerciseName,
 	});
@@ -23,24 +49,30 @@ export function renderWorkoutExerciseSection(options: WorkoutExerciseSectionOpti
 		options.onChange();
 	});
 
-	const removeExerciseButton = heading.createEl("button", { text: "Remove" });
+	titleGroup.createDiv({ cls: "fitness-tracker-exercise-summary", text: createExerciseSummary(options.exercise) });
+
+	const removeExerciseButton = heading.createEl("button", { cls: "fitness-tracker-exercise-menu", text: "⋮" });
 	removeExerciseButton.addEventListener("click", options.onRemove);
 
-	renderTextField(section, "Prescription", options.exercise.prescription, (value) => {
+	const details = section.createDiv({ cls: "fitness-tracker-exercise-details" });
+
+	renderTextField(details, "Prescription", options.exercise.prescription, (value) => {
 		options.exercise.prescription = value;
 		options.onChange();
 	});
 
-	renderTextField(section, "Notes", options.exercise.notes, (value) => {
-		options.exercise.notes = value;
-		options.onChange();
-	});
+	const setsContainer = details.createDiv({ cls: "fitness-tracker-set-list" });
+	const setHeader = setsContainer.createDiv({ cls: "fitness-tracker-set-header" });
+	setHeader.createSpan({ text: "Set" });
+	setHeader.createSpan({ text: "Previous" });
+	setHeader.createSpan({ text: "KG" });
+	setHeader.createSpan({ text: "Reps" });
+	setHeader.createSpan({ text: "" });
+	setHeader.createSpan({ text: "" });
 
-	const setsContainer = section.createDiv({ cls: "fitness-tracker-set-list" });
 	options.exercise.sets.forEach((set, setIndex) => {
 		renderWorkoutSetRow({
 			container: setsContainer,
-			exercise: options.exercise,
 			set,
 			setIndex,
 			onChange: options.onChange,
@@ -51,10 +83,15 @@ export function renderWorkoutExerciseSection(options: WorkoutExerciseSectionOpti
 		});
 	});
 
-	const addSetButton = section.createEl("button", { text: "Add set" });
+	const addSetButton = details.createEl("button", { cls: "fitness-tracker-add-set", text: "⊕" });
 	addSetButton.addEventListener("click", () => {
 		options.exercise.sets.push({ completed: false, weight: "", reps: "", rpe: "", notes: "" });
 		options.onRenderRequired();
+	});
+
+	renderTextField(details, "Notes", options.exercise.notes, (value) => {
+		options.exercise.notes = value;
+		options.onChange();
 	});
 }
 
@@ -64,11 +101,15 @@ function renderTextField(
 	value: string,
 	onChange: (value: string) => void,
 ): void {
-	const wrapper = container.createDiv({ cls: "fitness-tracker-field" });
+	const wrapper = container.createDiv({ cls: value ? "fitness-tracker-field has-value" : "fitness-tracker-field" });
 	wrapper.createEl("label", { text: label });
 	const input = wrapper.createEl("input", { type: "text", value });
 
 	input.addEventListener("change", () => {
 		onChange(input.value.trim());
 	});
+}
+
+function createExerciseSummary(exercise: WorkoutExercise): string {
+	return exercise.prescription || `${exercise.sets.length} sets`;
 }

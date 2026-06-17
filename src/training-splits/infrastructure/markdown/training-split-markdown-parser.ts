@@ -172,9 +172,11 @@ function isLevelTwoHeading(line: string): boolean {
 
 function parseTrainingSplitExerciseLine(line: string): TrainingSplitExercise | null {
 	const fields = splitMarkdownFields(line.replace(/^\s*[-*]\s+/, "").trim());
-	const exerciseLink = fields[0];
+	const exerciseField = fields[0];
+	const wikiLinkMatch = exerciseField?.match(/^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$/);
+	const exerciseName = wikiLinkMatch?.[1]?.trim();
 
-	if (!exerciseLink || !/^\[\[[^\]]+\]\]$/.test(exerciseLink)) {
+	if (!exerciseName) {
 		return null;
 	}
 
@@ -195,7 +197,7 @@ function parseTrainingSplitExerciseLine(line: string): TrainingSplitExercise | n
 		}
 	}
 
-	return { exerciseLink, sets, reps, extraFields };
+	return { exerciseName, sets, reps, extraFields };
 }
 
 function parsePlannedExerciseLine(
@@ -236,7 +238,6 @@ function parsePlannedExerciseLine(
 
 	return {
 		lineNumber,
-		exerciseLink: exerciseLinkMatch[0],
 		exerciseName,
 		sets,
 		reps: parseReps(prescriptionFields),

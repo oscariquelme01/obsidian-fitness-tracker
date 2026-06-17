@@ -11,6 +11,7 @@ export const WORKOUT_VIEW_TYPE = "fitness-workout";
 export class WorkoutView extends TextFileView {
 	private workout: Workout | null = null;
 	private rawData = "";
+	private draggedExerciseIndex: number | null = null;
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -52,6 +53,7 @@ export class WorkoutView extends TextFileView {
 	private render(): void {
 		this.contentEl.empty();
 		this.contentEl.addClass("fitness-tracker-workout-view");
+		this.contentEl.toggleClass("is-reordering", this.draggedExerciseIndex !== null);
 
 		if (!this.workout) {
 			this.contentEl.createEl("p", { text: "No workout loaded." });
@@ -69,12 +71,16 @@ export class WorkoutView extends TextFileView {
 				container: exerciseList,
 				exercise,
 				exerciseIndex,
+				isDragging: this.draggedExerciseIndex !== null,
 				onChange: () => this.saveOnly(),
 				onRenderRequired: () => this.saveAndRender(),
 				onRemove: () => {
 					this.workout?.exercises.splice(exerciseIndex, 1);
 					this.saveAndRender();
 				},
+				onDragStart: (index) => this.startExerciseDrag(index),
+				onDragEnter: (index) => this.moveDraggedExercise(index),
+				onDragEnd: () => this.endExerciseDrag(),
 			});
 		});
 
@@ -92,6 +98,32 @@ export class WorkoutView extends TextFileView {
 
 	private saveAndRender(): void {
 		this.saveOnly();
+		this.render();
+	}
+
+	private startExerciseDrag(exerciseIndex: number): void {
+		this.draggedExerciseIndex = exerciseIndex;
+		this.render();
+	}
+
+	private moveDraggedExercise(targetIndex: number): void {
+		if (!this.workout || this.draggedExerciseIndex === null || this.draggedExerciseIndex === targetIndex) {
+			return;
+		}
+
+		const [exercise] = this.workout.exercises.splice(this.draggedExerciseIndex, 1);
+
+		if (!exercise) {
+			return;
+		}
+
+		this.workout.exercises.splice(targetIndex, 0, exercise);
+		this.draggedExerciseIndex = targetIndex;
+		this.saveAndRender();
+	}
+
+	private endExerciseDrag(): void {
+		this.draggedExerciseIndex = null;
 		this.render();
 	}
 

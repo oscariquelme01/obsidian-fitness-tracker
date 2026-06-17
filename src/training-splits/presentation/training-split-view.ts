@@ -103,7 +103,7 @@ export class TrainingSplitView extends TextFileView {
 		const actions = section.createDiv({ cls: "fitness-tracker-training-day-actions" });
 		const addExerciseButton = actions.createEl("button", { text: "Add exercise" });
 		addExerciseButton.addEventListener("click", () => {
-			day.exercises.push({ exerciseLink: this.exerciseLinks[0] || "[[Exercise name]]", sets: "3", reps: "8-12", extraFields: [] });
+			day.exercises.push({ exerciseName: parseExerciseName(this.exerciseLinks[0] || "Exercise name"), sets: "3", reps: "8-12", extraFields: [] });
 			this.saveAndRender();
 		});
 
@@ -121,20 +121,21 @@ export class TrainingSplitView extends TextFileView {
 	): void {
 		const row = container.createDiv({ cls: "fitness-tracker-training-exercise" });
 		const select = row.createEl("select");
-		const options = this.exerciseLinks.includes(exercise.exerciseLink)
+		const selectedExerciseLink = `[[${exercise.exerciseName}]]`;
+		const options = this.exerciseLinks.includes(selectedExerciseLink)
 			? this.exerciseLinks
-			: [exercise.exerciseLink, ...this.exerciseLinks];
+			: [selectedExerciseLink, ...this.exerciseLinks];
 
 		options.forEach((exerciseLink) => {
 			const option = select.createEl("option", { text: exerciseLink, value: exerciseLink });
 
-			if (exerciseLink === exercise.exerciseLink) {
+			if (exerciseLink === selectedExerciseLink) {
 				option.selected = true;
 			}
 		});
 
 		select.addEventListener("change", () => {
-			exercise.exerciseLink = select.value;
+			exercise.exerciseName = parseExerciseName(select.value);
 			this.saveOnly();
 		});
 
@@ -199,8 +200,7 @@ export class TrainingSplitView extends TextFileView {
 				);
 			}
 
-			const exerciseLink = `[[${fileName}]]`;
-			day.exercises.push({ exerciseLink, sets: "3", reps: "8-12", extraFields: [] });
+			day.exercises.push({ exerciseName: fileName, sets: "3", reps: "8-12", extraFields: [] });
 			this.exerciseLinks = getExerciseLinks();
 			this.saveAndRender();
 			new Notice(`Added exercise: ${result.name}`);
@@ -234,4 +234,10 @@ function getExerciseLinks(): string[] {
 		.filter((file) => file.parent?.path === exerciseFolder)
 		.map((file) => `[[${file.basename}]]`)
 		.sort((left, right) => left.localeCompare(right));
+}
+
+function parseExerciseName(value: string): string {
+	const wikiLinkMatch = value.match(/^\[\[([^\]|]+)(?:\|[^\]]+)?\]\]$/);
+
+	return wikiLinkMatch?.[1]?.trim() || value;
 }

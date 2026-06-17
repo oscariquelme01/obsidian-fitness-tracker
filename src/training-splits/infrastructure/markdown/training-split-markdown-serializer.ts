@@ -26,7 +26,7 @@ function serializeDay(day: TrainingSplitDay): string {
 
 function serializeExercise(exercise: TrainingSplitExercise): string {
 	const fields = [
-		exercise.exerciseLink,
+		`[[${exercise.exerciseName}]]`,
 		exercise.sets ? `${exercise.sets} sets` : "",
 		exercise.reps ? `${exercise.reps} reps` : "",
 		...exercise.extraFields,

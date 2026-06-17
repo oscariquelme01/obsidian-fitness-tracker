@@ -2,7 +2,6 @@ import { TrainingSplitRepository } from "training-splits/application/training-sp
 import { formatDate } from "shared/domain/dates";
 import { getWeekdayName } from "shared/domain/weekdays";
 import { slugify } from "shared/domain/strings";
-import { createWorkoutExercise } from "./training-split-workout-mapper";
 import { CreateWorkoutCommandDto, CreateWorkoutResultDto } from "./workout-dtos";
 import { WorkoutRepository } from "./workout-repository";
 
@@ -42,6 +41,18 @@ export async function createWorkout(
 		title,
 		fileName: `${formatDate(command.date)}-${slugify(title)}`,
 		sourceTrainingSplitName: latestTrainingSplit.basename,
-		exercises: trainingDay.exercises.map(createWorkoutExercise),
+		exercises: trainingDay.exercises.map((exercise) => {
+			const prescription = [
+				exercise.sets ? `${exercise.sets} sets` : "",
+				exercise.reps ? `${exercise.reps} reps` : "",
+				...exercise.extraFields,
+			].filter(Boolean).join(" | ");
+
+			return {
+				exerciseName: exercise.exerciseName,
+				sets: Number(exercise.sets) || 0,
+				prescription,
+			};
+		}),
 	});
 }
