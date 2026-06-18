@@ -1,6 +1,6 @@
 import { Exercise } from "../domain/exercise";
 
-export interface CreateExerciseDto {
+export interface CreateExerciseInputDto {
 	name: string;
 	primaryMuscles?: string[];
 	equipment?: string[];

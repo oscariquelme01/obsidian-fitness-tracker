@@ -1,7 +1,6 @@
 import { App, normalizePath, TFile } from "obsidian";
 import { FitnessTrackerSettings } from "settings/settings";
 import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
-import { CreateExerciseDto, CreateExerciseResultDto } from "../application/exercise-dtos";
 import { ExerciseRepository } from "../application/exercise-repository";
 import { Exercise } from "../domain/exercise";
 import { parseExerciseFromMarkdownFile } from "./markdown/exercise-markdown-parser";
@@ -21,32 +20,23 @@ export class ObsidianExerciseRepository implements ExerciseRepository {
 			.map((file) => this.loadExerciseFromFile(file));
 	}
 
-	async create(input: CreateExerciseDto): Promise<CreateExerciseResultDto> {
+	async create(exercise: Exercise): Promise<void> {
 		const exerciseFolder = normalizePath(this.settings.exerciseLibraryFolder);
 		await ensureFolder(exerciseFolder);
 
-		const fileName = createExerciseFileName(input.name);
+		const fileName = createExerciseFileName(exercise.name);
 		const exercisePath = normalizePath(`${exerciseFolder}/${fileName}.md`);
 		const existingFile = this.app.vault.getAbstractFileByPath(exercisePath);
 
 		if (existingFile instanceof TFile) {
-			return { exercise: this.loadExerciseFromFile(existingFile), created: false };
+			return;
 		}
 
 		if (existingFile) {
 			throw new Error(`Cannot create exercise. Path already exists: ${exercisePath}`);
 		}
 
-		const file = await this.app.vault.create(exercisePath, createExerciseNoteContent(input));
-
-		return {
-			exercise: {
-				name: file.basename,
-				primaryMuscles: input.primaryMuscles || [],
-				equipment: input.equipment || [],
-			},
-			created: true,
-		};
+		await this.app.vault.create(exercisePath, createExerciseNoteContent(exercise));
 	}
 
 	async getByName(name: string): Promise<Exercise | null> {

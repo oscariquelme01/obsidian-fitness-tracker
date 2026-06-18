@@ -1,4 +1,4 @@
-import { CreateExerciseDto } from "../../application/exercise-dtos";
+import { Exercise } from "../../domain/exercise";
 import { formatYamlList } from "shared/infrastructure/yaml-formatting";
 import { EXERCISE_FRONTMATTER_PROPERTY } from "./exercise-frontmatter-properties";
 
@@ -13,7 +13,7 @@ export function createExerciseId(exerciseName: string): string {
 	return exerciseId || "exercise";
 }
 
-export function createExerciseNoteContent(input: CreateExerciseDto): string {
+export function createExerciseNoteContent(input: Exercise): string {
 	const exerciseId = createExerciseId(input.name);
 	const primaryMuscles = formatYamlList(input.primaryMuscles || []);
 	const equipment = formatYamlList(input.equipment || []);

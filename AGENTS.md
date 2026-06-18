@@ -35,8 +35,11 @@
 - `Workout` domain objects should use exercise names, not Markdown exercise links.
 - Keep persisted `fitnessType: workout-log` unless a migration is explicitly requested.
 - Keep existing setting names such as `workoutLogFolder` unless a migration is explicitly requested.
-- Use `CommandDto` for use-case input and `Create*Dto` for repository/persistence payloads.
-- Preferred DTO names include `CreateExerciseDto`, `CreateExerciseResultDto`, `CreateTrainingSplitDto`, `CreateTrainingSplitResultDto`, `CreateWorkoutCommandDto`, `CreateWorkoutDto`, and `WorkoutFileDto`.
+- DTOs are the communication mechanism between infrastructure/presentation and application use cases.
+- Application use cases may accept input DTOs and return result DTOs, but application must not use DTOs to communicate with domain objects.
+- For a use case, prefer `*InputDto` for the first argument and `*ResultDto` for the return value, for example `CreateWorkoutInputDto` and `CreateWorkoutResultDto`.
+- Input DTOs should contain only the information required by the use case. Do not include persistence concerns such as file paths unless the use case genuinely owns them.
+- Result DTOs should contain domain objects or application-level result data needed by callers. Infrastructure is responsible for deriving paths, filenames, notices, and persistence details.
 - Keep repositories receiving `app` and `settings` for now; do not pass the whole plugin instance into repositories.
 
 ## UI and styles
