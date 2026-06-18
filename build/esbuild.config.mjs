@@ -1,7 +1,6 @@
 import esbuild from "esbuild";
 import process from "process";
 import { builtinModules } from "node:module";
-import { buildStyles, watchStyles } from "./build-styles.mjs";
 
 const banner =
 `/*
@@ -44,10 +43,9 @@ const context = await esbuild.context({
 });
 
 if (prod) {
-	await buildStyles();
 	await context.rebuild();
+	await context.dispose();
 	process.exit(0);
 } else {
-	await watchStyles();
 	await context.watch();
 }

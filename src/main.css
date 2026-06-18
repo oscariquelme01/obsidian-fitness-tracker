@@ -1,6 +1,6 @@
-@tailwind components;
-@tailwind utilities;
-
 @import "./shared/presentation/text-input-modal.css";
 @import "./shared/presentation/form-fields/text-input-field.css";
 @import "./training-splits/presentation/training-split-view.css";
+
+@tailwind components;
+@tailwind utilities;

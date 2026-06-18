@@ -1,11 +1,10 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type BadgeFlavour = "danger" | "info" | "secondary" | "success" | "warning";
 
-interface BadgeProps {
+interface BadgeProps extends ComponentPropsWithoutRef<"span"> {
 	children: ReactNode;
 	flavour: BadgeFlavour;
-	className?: string;
 }
 
 const BADGE_FLAVOUR_CLASSES: Record<BadgeFlavour, string> = {
@@ -16,9 +15,10 @@ const BADGE_FLAVOUR_CLASSES: Record<BadgeFlavour, string> = {
 	warning: "border-ctp-yellow/40 bg-ctp-yellow/15 text-ctp-yellow",
 };
 
-export function Badge({ children, flavour, className = "" }: BadgeProps) {
+export function Badge({ children, flavour, className = "", ...spanProps }: BadgeProps) {
 	return (
 		<span
+			{...spanProps}
 			className={[
 				"inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium leading-none",
 				BADGE_FLAVOUR_CLASSES[flavour],

@@ -1,14 +1,12 @@
-import type { Workout, WorkoutSetType } from "workouts/domain/workout";
+import type { Workout } from "workouts/domain/workout";
 import { WorkoutExerciseComponent } from "./workout-exercise";
 import Divider from "shared/presentation/components/Divider";
 
 interface Props {
 	workout: Workout | null;
-	onSetCompletedChange: (exerciseIndex: number, setIndex: number, completed: boolean) => void;
-	onSetTypeChange: (exerciseIndex: number, setIndex: number, type: WorkoutSetType) => void;
 }
 
-export function WorkoutComponent({ workout, onSetCompletedChange, onSetTypeChange }: Props) {
+export function WorkoutComponent({ workout }: Props) {
 	if (!workout) {
 		return <p>Loading workout...</p>;
 	}
@@ -29,8 +27,6 @@ export function WorkoutComponent({ workout, onSetCompletedChange, onSetTypeChang
 						key={exercise.exerciseName}
 						exercise={exercise}
 						exerciseIndex={exerciseIndex}
-						onSetCompletedChange={onSetCompletedChange}
-						onSetTypeChange={onSetTypeChange}
 					/>
 				))
 			) : 'No Excercise Scheduled'}

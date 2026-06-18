@@ -1,14 +1,35 @@
 import { Badge } from "shared/presentation/components/Badge";
 import { ContextMenu } from "shared/presentation/components/Context-menu";
+import type { ComponentPropsWithoutRef } from "react";
 import type { WorkoutSet, WorkoutSetType } from "workouts/domain/workout";
+import { useWorkoutActions } from "../workout-actions-context";
 
 interface Props {
 	sets: WorkoutSet[];
-	onCompletedChange: (setIndex: number, completed: boolean) => void;
-	onTypeChange: (setIndex: number, type: WorkoutSetType) => void;
+	exerciseIndex: number;
 }
 
-export function WorkoutSetRows({ sets, onCompletedChange, onTypeChange }: Props) {
+export function WorkoutSetRows({ sets, exerciseIndex }: Props) {
+	const { updateWorkout } = useWorkoutActions();
+
+	function updateSet(setIndex: number, changes: { completed?: boolean; type?: WorkoutSetType }) {
+		updateWorkout((workout) => ({
+			...workout,
+			exercises: workout.exercises.map((exercise, currentExerciseIndex) => {
+				if (currentExerciseIndex !== exerciseIndex) {
+					return exercise;
+				}
+
+				return {
+					...exercise,
+					sets: exercise.sets.map((set, currentSetIndex) => {
+						return currentSetIndex === setIndex ? { ...set, ...changes } : set;
+					}),
+				};
+			}),
+		}));
+	}
+
 	if (sets.length === 0) {
 		return (
 			<tr>
@@ -25,7 +46,7 @@ export function WorkoutSetRows({ sets, onCompletedChange, onTypeChange }: Props)
 						<WorkoutSetTypeMenu
 							setNumber={index + 1}
 							type={set.type || "normal"}
-							onChange={(type) => onTypeChange(index, type)}
+							onChange={(type) => updateSet(index, { type })}
 						/>
 					</th>
 					<td className="text-center">-</td>
@@ -35,7 +56,9 @@ export function WorkoutSetRows({ sets, onCompletedChange, onTypeChange }: Props)
 						<input
 							type="checkbox"
 							checked={set.completed}
-							onChange={(event) => onCompletedChange(index, event.currentTarget.checked)}
+							onChange={(event) => {
+								updateSet(index, { completed: event.currentTarget.checked });
+							}}
 						/>
 					</td>
 				</tr>
@@ -65,14 +88,19 @@ function WorkoutSetTypeMenu({
 	);
 }
 
-function WorkoutSetTypeBadge({ setNumber, type }: { setNumber: number; type: WorkoutSetType }) {
+interface WorkoutSetTypeBadgeProps extends ComponentPropsWithoutRef<"span"> {
+	setNumber: number;
+	type: WorkoutSetType;
+}
+
+function WorkoutSetTypeBadge({ setNumber, type, ...spanProps }: WorkoutSetTypeBadgeProps) {
 	if (type === "failure") {
-		return <Badge flavour="danger">{setNumber} F</Badge>;
+		return <Badge {...spanProps} flavour="danger">F</Badge>;
 	}
 
 	if (type === "warmup") {
-		return <Badge flavour="success">{setNumber} W</Badge>;
+		return <Badge {...spanProps} flavour="success">W</Badge>;
 	}
 
-	return <Badge flavour="secondary">{setNumber}</Badge>;
+	return <Badge {...spanProps} flavour="secondary">{setNumber}</Badge>;
 }
