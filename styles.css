@@ -199,6 +199,10 @@
 	display: contents;
 }
 
+.\!h-auto {
+	height: auto !important;
+}
+
 .h-\[1px\] {
 	height: 1px;
 }
@@ -291,6 +295,10 @@
 	border-color: rgba(var(--ctp-yellow), 0.4);
 }
 
+.\!bg-primary {
+	background-color: var(--background-primary) !important;
+}
+
 .\!bg-transparent {
 	background-color: transparent !important;
 }
@@ -322,6 +330,14 @@
 
 .bg-transparent {
 	background-color: transparent;
+}
+
+.\!p-2 {
+	padding: 0.5rem !important;
+}
+
+.p-1 {
+	padding: 0.25rem;
 }
 
 .px-2 {

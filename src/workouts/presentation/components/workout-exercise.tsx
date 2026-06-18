@@ -2,6 +2,7 @@ import type { WorkoutExercise, WorkoutSet } from "workouts/domain/workout";
 import { WorkoutSetRows } from "./workout-sets";
 import { Icon } from "shared/presentation/components/Icon";
 import { useWorkoutActions } from "../workout-actions-context";
+import { ContextMenu } from "shared/presentation/components/Context-menu";
 
 interface Props {
 	exercise: WorkoutExercise;
@@ -36,6 +37,15 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 		}));
 	}
 
+	function deleteExercise() {
+		updateWorkout((workout) => ({
+			...workout,
+			exercises: workout.exercises.filter((_, currentExerciseIndex) => {
+				return currentExerciseIndex !== exerciseIndex;
+			}),
+		}));
+	}
+
 	return (
 		<div className="w-full">
 			<div className="flex items-end my-4 justify-between">
@@ -46,14 +56,30 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 					</div>
 				</div>
 
-				<button
-					type="button"
-					aria-label="Open exercise actions"
-					className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"
-				>
-					<Icon name="more-vertical"/>
-
-				</button>
+				<ContextMenu
+					trigger={
+						<button
+							type="button"
+							aria-label="Open exercise actions"
+							className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"
+						>
+							<Icon name="more-vertical"/>
+						</button>
+					}
+					items={[
+						{
+							key: "swap-exercise",
+							label: "Swap exercise",
+							disabled: true,
+							onSelect: () => {},
+						},
+						{
+							key: "delete-exercise",
+							label: "Delete exercise",
+							onSelect: deleteExercise,
+						},
+					]}
+				/>
 			</div>
 			<table className="w-full">
 				<thead>

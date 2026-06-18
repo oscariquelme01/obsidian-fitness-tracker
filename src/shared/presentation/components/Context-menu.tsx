@@ -84,7 +84,7 @@ export function ContextMenu({ trigger, items }: ContextMenuProps) {
 			{open && (
 				<div
 					role="menu"
-					className= "absolute left-0 top-full mt-1 z-50 bg-primary shadow-lg border-border border border-solid rounded-lg overflow-hidden"
+					className= "absolute left-0 top-full mt-1 z-50 bg-primary shadow-lg border-border border border-solid rounded-lg overflow-hidden p-1"
 				>
 					{items.map((item, index) => (
 						<button
@@ -92,7 +92,7 @@ export function ContextMenu({ trigger, items }: ContextMenuProps) {
 							type="button"
 							role="menuitem"
 							disabled={item.disabled}
-							className="block rounded-none text-center text-sm hover:bg-secondary disabled:opacity-50 w-full"
+							className="block rounded-none !bg-primary text-sm hover:bg-secondary !h-auto disabled:opacity-50 !p-2 text-center w-full"
 							onClick={() => {
 								item.onSelect();
 								setOpen(false);
