@@ -38,10 +38,30 @@ export function WorkoutSetRows({ sets, exerciseIndex }: Props) {
 		}));
 	}
 
+	function deleteSet(setIndex: number) {
+		updateWorkout((workout) => ({
+			...workout,
+			exercises: workout.exercises.map(
+				(exercise, currentExerciseIndex) => {
+					if (currentExerciseIndex !== exerciseIndex) {
+						return exercise;
+					}
+
+					return {
+						...exercise,
+						sets: exercise.sets.filter((_, currentSetIndex) => {
+							return currentSetIndex !== setIndex;
+						}),
+					};
+				},
+			),
+		}));
+	}
+
 	if (sets.length === 0) {
 		return (
 			<tr>
-				<td colSpan={5}>No sets logged.</td>
+				<td colSpan={6} className="text-center text-muted">No sets logged.</td>
 			</tr>
 		);
 	}
@@ -72,7 +92,12 @@ export function WorkoutSetRows({ sets, exerciseIndex }: Props) {
 						/>
 					</td>
 					<td>
-						<button className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent">
+						<button
+							type="button"
+							aria-label={`Delete set ${index + 1}`}
+							className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"
+							onClick={() => deleteSet(index)}
+						>
 							<Icon name="trash" className="text-ctp-red" />
 						</button>
 					</td>

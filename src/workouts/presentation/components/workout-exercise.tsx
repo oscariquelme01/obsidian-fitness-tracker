@@ -1,6 +1,7 @@
-import type { WorkoutExercise } from "workouts/domain/workout";
+import type { WorkoutExercise, WorkoutSet } from "workouts/domain/workout";
 import { WorkoutSetRows } from "./workout-sets";
 import { Icon } from "shared/presentation/components/Icon";
+import { useWorkoutActions } from "../workout-actions-context";
 
 interface Props {
 	exercise: WorkoutExercise;
@@ -8,6 +9,33 @@ interface Props {
 }
 
 export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
+	const { updateWorkout } = useWorkoutActions();
+
+	function addSet() {
+		const newSet: WorkoutSet = {
+			completed: false,
+			type: "normal",
+			weight: "",
+			reps: "",
+			rpe: "",
+			notes: "",
+		};
+
+		updateWorkout((workout) => ({
+			...workout,
+			exercises: workout.exercises.map((currentExercise, currentExerciseIndex) => {
+				if (currentExerciseIndex !== exerciseIndex) {
+					return currentExercise;
+				}
+
+				return {
+					...currentExercise,
+					sets: [...currentExercise.sets, newSet],
+				};
+			}),
+		}));
+	}
+
 	return (
 		<div className="w-full">
 			<div className="flex items-end my-4 justify-between">
@@ -18,7 +46,11 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 					</div>
 				</div>
 
-				<button className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent">
+				<button
+					type="button"
+					aria-label="Open exercise actions"
+					className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"
+				>
 					<Icon name="more-vertical"/>
 
 				</button>
@@ -42,7 +74,14 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 				</tbody>
 			</table>
 			<div className="flex w-full items-center justify-center">
-				<button className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"><Icon name="plus"/></button>
+				<button
+					type="button"
+					aria-label={`Add set to ${exercise.exerciseName}`}
+					className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"
+					onClick={addSet}
+				>
+					<Icon name="plus"/>
+				</button>
 			</div>
 		</div>
 	);
