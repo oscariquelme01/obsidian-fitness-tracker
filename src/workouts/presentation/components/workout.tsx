@@ -1,6 +1,5 @@
 import type { Workout } from "workouts/domain/workout";
 import { WorkoutExerciseComponent } from "./workout-exercise";
-import Divider from "shared/presentation/components/Divider";
 
 interface Props {
 	workout: Workout | null;
@@ -21,13 +20,11 @@ export function WorkoutComponent({ workout }: Props) {
 
 			{workout.exercises.length > 0
 				? workout.exercises.map((exercise, exerciseIndex) => (
-						<>
-							<WorkoutExerciseComponent
-								key={exercise.exerciseName}
-								exercise={exercise}
-								exerciseIndex={exerciseIndex}
-							/>
-						</>
+						<WorkoutExerciseComponent
+							key={exercise.exerciseName}
+							exercise={exercise}
+							exerciseIndex={exerciseIndex}
+						/>
 					))
 				: "No Excercise Scheduled"}
 		</section>

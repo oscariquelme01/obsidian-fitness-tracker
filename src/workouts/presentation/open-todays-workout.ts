@@ -7,31 +7,33 @@ import { WORKOUT_VIEW_TYPE } from "./workout-view";
 
 export async function openTodaysWorkout(): Promise<void> {
 	const plugin = getPlugin();
+	const today = new Date();
+	const workoutRepository = new ObsidianWorkoutRepository(plugin.app, plugin.settings);
 
 	try {
-		const workout = await createWorkout(
-			{ date: new Date() },
+		const result = await createWorkout(
+			{ date: today },
 			{
 				trainingSplitRepository: new ObsidianTrainingSplitRepository(plugin.app, plugin.settings),
-				workoutRepository: new ObsidianWorkoutRepository(plugin.app, plugin.settings),
+				workoutRepository,
 			},
 		);
 
-		if (!workout) {
+		if (!result) {
 			new Notice("No workout found for today");
 			return;
 		}
 
-		const file = plugin.app.vault.getAbstractFileByPath(workout.path);
+		const file = workoutRepository.getFileByDate(today);
 		if (!(file instanceof TFile)) {
-			new Notice(`Workout file not found: ${workout.path}`);
+			new Notice("Workout file not found");
 			return;
 		}
 
 		await openWorkoutFile(file);
 
-		if (workout.created) {
-			new Notice(`Created workout: ${workout.basename}`);
+		if (result.created) {
+			new Notice(`Created workout: ${result.workout.title}`);
 		}
 	} catch (error) {
 		console.error(error);

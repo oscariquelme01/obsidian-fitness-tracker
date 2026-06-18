@@ -2,10 +2,9 @@ import { App, normalizePath, TFile } from "obsidian";
 import { FitnessTrackerSettings } from "settings/settings";
 import { ensureFolder } from "shared/infrastructure/obsidian-file-system";
 import { formatDate } from "shared/domain/dates";
-import { CreateWorkoutDto, WorkoutFileDto } from "../application/workout-dtos";
+import { slugify } from "shared/domain/strings";
 import { WorkoutRepository } from "../application/workout-repository";
 import { Workout } from "../domain/workout";
-import { createWorkoutNoteContent } from "./markdown/workout-markdown-template";
 import { parseWorkout } from "./markdown/workout-markdown-parser";
 import { serializeWorkout } from "./markdown/workout-markdown-serializer";
 
@@ -35,49 +34,44 @@ export class ObsidianWorkoutRepository implements WorkoutRepository {
 		await this.app.vault.modify(file, serializeWorkout(workout));
 	}
 
-	async getByDate(date: Date): Promise<WorkoutFileDto | null> {
-		const datePrefix = formatDate(date);
-		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
-		const file = this.app.vault.getFiles()
-			.find((candidate) => candidate.parent?.path === workoutFolder && candidate.basename.startsWith(datePrefix));
+	async getByDate(date: Date): Promise<Workout | null> {
+		const file = this.getFileByDate(date);
 
-		return file ? { path: file.path, basename: file.basename, created: false } : null;
+		return file ? parseWorkout(await this.app.vault.read(file)) : null;
 	}
 
-	async create(dto: CreateWorkoutDto): Promise<WorkoutFileDto> {
+	async create(workout: Workout): Promise<void> {
 		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 		await ensureFolder(workoutFolder);
 
-		const normalizedPath = normalizePath(`${workoutFolder}/${dto.fileName}.md`);
+		const normalizedPath = normalizePath(`${workoutFolder}/${workout.date}-${slugify(workout.title)}.md`);
 
 		const existingFile = this.app.vault.getAbstractFileByPath(normalizedPath);
 
 		if (existingFile instanceof TFile) {
-			return { path: existingFile.path, basename: existingFile.basename, created: false };
+			return;
 		}
 
 		if (existingFile) {
 			throw new Error(`Cannot create workout. Path already exists: ${normalizedPath}`);
 		}
 
-		const file = await this.app.vault.create(
-			normalizedPath,
-			createWorkoutNoteContent({
-				date: dto.date,
-				workoutTitle: dto.title,
-				sourceTrainingSplitName: dto.sourceTrainingSplitName,
-				exercises: dto.exercises,
-			}),
-		);
-
-		return { path: file.path, basename: file.basename, created: true };
+		await this.app.vault.create(normalizedPath, serializeWorkout(workout));
 	}
 
-	async list(): Promise<WorkoutFileDto[]> {
+	async list(): Promise<Workout[]> {
+		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
+		const files = this.app.vault.getFiles()
+			.filter((file) => file.parent?.path === workoutFolder);
+
+		return Promise.all(files.map(async (file) => parseWorkout(await this.app.vault.read(file))));
+	}
+
+	getFileByDate(date: Date): TFile | null {
+		const datePrefix = formatDate(date);
 		const workoutFolder = normalizePath(this.settings.workoutLogFolder);
 
 		return this.app.vault.getFiles()
-			.filter((file) => file.parent?.path === workoutFolder)
-			.map((file) => ({ path: file.path, basename: file.basename }));
+			.find((candidate) => candidate.parent?.path === workoutFolder && candidate.basename.startsWith(datePrefix)) ?? null;
 	}
 }

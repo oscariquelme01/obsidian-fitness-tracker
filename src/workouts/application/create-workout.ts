@@ -1,9 +1,9 @@
 import { TrainingSplitRepository } from "training-splits/application/training-split-repository";
 import { formatDate } from "shared/domain/dates";
 import { getWeekdayName } from "shared/domain/weekdays";
-import { slugify } from "shared/domain/strings";
-import { CreateWorkoutCommandDto, WorkoutFileDto } from "./workout-dtos";
+import { CreateWorkoutInputDto, CreateWorkoutResultDto } from "./workout-dtos";
 import { WorkoutRepository } from "./workout-repository";
+import { Workout } from "../domain/workout";
 
 interface CreateWorkoutDependencies {
 	trainingSplitRepository: TrainingSplitRepository;
@@ -11,16 +11,16 @@ interface CreateWorkoutDependencies {
 }
 
 export async function createWorkout(
-	command: CreateWorkoutCommandDto,
+	input: CreateWorkoutInputDto,
 	dependencies: CreateWorkoutDependencies,
-): Promise<WorkoutFileDto | null> {
-	const existingWorkout = await dependencies.workoutRepository.getByDate(command.date);
+): Promise<CreateWorkoutResultDto | null> {
+	const existingWorkout = await dependencies.workoutRepository.getByDate(input.date);
 
 	if (existingWorkout) {
-		return existingWorkout;
+		return { workout: existingWorkout, created: false };
 	}
 
-	const scheduledDay = getWeekdayName(command.date);
+	const scheduledDay = getWeekdayName(input.date);
 	const latestTrainingSplit = await dependencies.trainingSplitRepository.getLatestFile();
 
 	if (!latestTrainingSplit) {
@@ -35,12 +35,10 @@ export async function createWorkout(
 	}
 
 	const title = trainingDay.title || `${scheduledDay} workout`;
-
-	return dependencies.workoutRepository.create({
-		date: command.date,
+	const workout: Workout = {
+		date: formatDate(input.date),
 		title,
-		fileName: `${formatDate(command.date)}-${slugify(title)}`,
-		sourceTrainingSplitName: latestTrainingSplit.basename,
+		sourceTrainingSplit: latestTrainingSplit.basename,
 		exercises: trainingDay.exercises.map((exercise) => {
 			const prescription = [
 				exercise.sets ? `${exercise.sets} sets` : "",
@@ -50,9 +48,20 @@ export async function createWorkout(
 
 			return {
 				exerciseName: exercise.exerciseName,
-				sets: Number(exercise.sets) || 0,
 				prescription,
+				notes: "",
+				sets: Array.from({ length: Number(exercise.sets) || 0 }, () => ({
+					completed: false,
+					weight: "",
+					reps: "",
+					rpe: "",
+					notes: "",
+				})),
 			};
 		}),
-	});
+	};
+
+	await dependencies.workoutRepository.create(workout);
+
+	return { workout, created: true };
 }
