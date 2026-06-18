@@ -1,8 +1,10 @@
+import { useState } from "react";
 import type { WorkoutExercise, WorkoutSet } from "workouts/domain/workout";
 import { WorkoutSetRows } from "./workout-sets";
 import { Icon } from "shared/presentation/components/Icon";
 import { useWorkoutActions } from "../workout-actions-context";
 import { ContextMenu } from "shared/presentation/components/Context-menu";
+import { Modal } from "shared/presentation/components/Modal";
 
 interface Props {
 	exercise: WorkoutExercise;
@@ -11,6 +13,7 @@ interface Props {
 
 export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 	const { updateWorkout } = useWorkoutActions();
+	const [swapExerciseModalOpen, setSwapExerciseModalOpen] = useState(false);
 
 	function addSet() {
 		const newSet: WorkoutSet = {
@@ -70,8 +73,7 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 						{
 							key: "swap-exercise",
 							label: "Swap exercise",
-							disabled: true,
-							onSelect: () => {},
+							onSelect: () => setSwapExerciseModalOpen(true),
 						},
 						{
 							key: "delete-exercise",
@@ -81,6 +83,13 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 					]}
 				/>
 			</div>
+
+			{swapExerciseModalOpen && (
+				<Modal title="Swap exercise" onClose={() => setSwapExerciseModalOpen(false)}>
+					<p className="m-0 text-muted">Exercise search goes here.</p>
+				</Modal>
+			)}
+
 			<table className="w-full">
 				<thead>
 					<tr>

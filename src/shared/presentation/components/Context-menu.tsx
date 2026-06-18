@@ -30,9 +30,16 @@ interface TriggerProps {
 	"aria-haspopup"?: "menu";
 }
 
+type MenuPlacement = {
+	horizontal: "left" | "right";
+	vertical: "bottom" | "top";
+};
+
 export function ContextMenu({ trigger, items }: ContextMenuProps) {
 	const [open, setOpen] = useState(false);
+	const [placement, setPlacement] = useState<MenuPlacement>({ horizontal: "left", vertical: "bottom" });
 	const rootRef = useRef<HTMLDivElement>(null);
+	const menuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (!open) return;
@@ -58,6 +65,22 @@ export function ContextMenu({ trigger, items }: ContextMenuProps) {
 		};
 	}, [open]);
 
+	useEffect(() => {
+		if (!open || !rootRef.current || !menuRef.current) {
+			return;
+		}
+
+		const triggerRect = rootRef.current.getBoundingClientRect();
+		const menuRect = menuRef.current.getBoundingClientRect();
+		const viewportGap = 8;
+		const nextPlacement: MenuPlacement = {
+			horizontal: triggerRect.left + menuRect.width + viewportGap > window.innerWidth ? "right" : "left",
+			vertical: triggerRect.bottom + menuRect.height + viewportGap > window.innerHeight ? "top" : "bottom",
+		};
+
+		setPlacement(nextPlacement);
+	}, [open, items]);
+
 	const triggerEl = cloneElement(trigger, {
 		"aria-expanded": open,
 		"aria-haspopup": "menu",
@@ -77,14 +100,20 @@ export function ContextMenu({ trigger, items }: ContextMenuProps) {
 		tabIndex: trigger.props.tabIndex ?? 0,
 	});
 
+	const placementClass = [
+		placement.horizontal === "left" ? "left-0" : "right-0",
+		placement.vertical === "bottom" ? "top-full mt-1" : "bottom-full mb-1",
+	].join(" ");
+
 	return (
 		<div ref={rootRef} className="relative">
 			{triggerEl}
 
 			{open && (
 				<div
+					ref={menuRef}
 					role="menu"
-					className= "absolute left-0 top-full mt-1 z-50 bg-primary shadow-lg border-border border border-solid rounded-lg overflow-hidden p-1"
+					className={`${placementClass} absolute z-50 max-h-[min(20rem,calc(100vh-1rem))] max-w-[calc(100vw-1rem)] overflow-auto rounded-lg border border-border border-solid bg-primary p-1 shadow-lg`}
 				>
 					{items.map((item, index) => (
 						<button
