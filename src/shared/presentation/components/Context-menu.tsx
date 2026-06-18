@@ -42,7 +42,7 @@ export function ContextMenu({ trigger, items }: ContextMenuProps) {
 
 	return (
 		<div ref={rootRef} className="relative inline-block rounded-none">
-			<button className="rounded-full" type="button" onClick={() => setOpen((value) => !value)}>
+			<button className="rounded-none" type="button" onClick={() => setOpen((value) => !value)}>
 				{trigger}
 			</button>
 
