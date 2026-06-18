@@ -12,21 +12,28 @@ interface Props {
 export function WorkoutSetRows({ sets, exerciseIndex }: Props) {
 	const { updateWorkout } = useWorkoutActions();
 
-	function updateSet(setIndex: number, changes: { completed?: boolean; type?: WorkoutSetType }) {
+	function updateSet(
+		setIndex: number,
+		changes: { completed?: boolean; type?: WorkoutSetType },
+	) {
 		updateWorkout((workout) => ({
 			...workout,
-			exercises: workout.exercises.map((exercise, currentExerciseIndex) => {
-				if (currentExerciseIndex !== exerciseIndex) {
-					return exercise;
-				}
+			exercises: workout.exercises.map(
+				(exercise, currentExerciseIndex) => {
+					if (currentExerciseIndex !== exerciseIndex) {
+						return exercise;
+					}
 
-				return {
-					...exercise,
-					sets: exercise.sets.map((set, currentSetIndex) => {
-						return currentSetIndex === setIndex ? { ...set, ...changes } : set;
-					}),
-				};
-			}),
+					return {
+						...exercise,
+						sets: exercise.sets.map((set, currentSetIndex) => {
+							return currentSetIndex === setIndex
+								? { ...set, ...changes }
+								: set;
+						}),
+					};
+				},
+			),
 		}));
 	}
 
@@ -39,31 +46,33 @@ export function WorkoutSetRows({ sets, exerciseIndex }: Props) {
 	}
 
 	return (
-		<>
-			{sets.map((set, index) => (
-				<tr key={index}>
-					<th className="text-center" scope="row">
-						<WorkoutSetTypeMenu
-							setNumber={index + 1}
-							type={set.type || "normal"}
-							onChange={(type) => updateSet(index, { type })}
-						/>
-					</th>
-					<td className="text-center">-</td>
-					<td className="text-center">{set.weight || "-"}</td>
-					<td className="text-center">{set.reps || "-"}</td>
-					<td className="text-center">
-						<input
-							type="checkbox"
-							checked={set.completed}
-							onChange={(event) => {
-								updateSet(index, { completed: event.currentTarget.checked });
-							}}
-						/>
-					</td>
-				</tr>
-			))}
-		</>
+			<>
+				{sets.map((set, index) => (
+					<tr key={index}>
+						<th className="text-center" scope="row">
+							<WorkoutSetTypeMenu
+								setNumber={index + 1}
+								type={set.type || "normal"}
+								onChange={(type) => updateSet(index, { type })}
+							/>
+						</th>
+						<td className="text-center">-</td>
+						<td className="text-center">{set.weight || "-"}</td>
+						<td className="text-center">{set.reps || "-"}</td>
+						<td className="text-center">
+							<input
+								type="checkbox"
+								checked={set.completed}
+								onChange={(event) => {
+									updateSet(index, {
+										completed: event.currentTarget.checked,
+									});
+								}}
+							/>
+						</td>
+					</tr>
+				))}
+			</>
 	);
 }
 
@@ -80,9 +89,21 @@ function WorkoutSetTypeMenu({
 		<ContextMenu
 			trigger={<WorkoutSetTypeBadge setNumber={setNumber} type={type} />}
 			items={[
-				{ key: "normal", label: <Badge flavour="secondary">-</Badge>, onSelect: () => onChange("normal") },
-				{ key: "warmup", label: <Badge flavour="success">W</Badge>, onSelect: () => onChange("warmup") },
-				{ key: "failure", label: <Badge flavour="danger">F</Badge>, onSelect: () => onChange("failure") },
+				{
+					key: "normal",
+					label: <Badge flavour="secondary">-</Badge>,
+					onSelect: () => onChange("normal"),
+				},
+				{
+					key: "warmup",
+					label: <Badge flavour="success">W</Badge>,
+					onSelect: () => onChange("warmup"),
+				},
+				{
+					key: "failure",
+					label: <Badge flavour="danger">F</Badge>,
+					onSelect: () => onChange("failure"),
+				},
 			]}
 		/>
 	);
@@ -93,14 +114,30 @@ interface WorkoutSetTypeBadgeProps extends ComponentPropsWithoutRef<"span"> {
 	type: WorkoutSetType;
 }
 
-function WorkoutSetTypeBadge({ setNumber, type, ...spanProps }: WorkoutSetTypeBadgeProps) {
+function WorkoutSetTypeBadge({
+	setNumber,
+	type,
+	...spanProps
+}: WorkoutSetTypeBadgeProps) {
 	if (type === "failure") {
-		return <Badge {...spanProps} flavour="danger">F</Badge>;
+		return (
+			<Badge {...spanProps} flavour="danger">
+				F
+			</Badge>
+		);
 	}
 
 	if (type === "warmup") {
-		return <Badge {...spanProps} flavour="success">W</Badge>;
+		return (
+			<Badge {...spanProps} flavour="success">
+				W
+			</Badge>
+		);
 	}
 
-	return <Badge {...spanProps} flavour="secondary">{setNumber}</Badge>;
+	return (
+		<Badge {...spanProps} flavour="secondary">
+			{setNumber}
+		</Badge>
+	);
 }

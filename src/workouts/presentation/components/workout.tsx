@@ -19,17 +19,17 @@ export function WorkoutComponent({ workout }: Props) {
 				</h1>
 			</header>
 
-			<Divider/>
-
-			{workout.exercises.length > 0 ? (
-				workout.exercises.map((exercise, exerciseIndex) => (
-					<WorkoutExerciseComponent
-						key={exercise.exerciseName}
-						exercise={exercise}
-						exerciseIndex={exerciseIndex}
-					/>
-				))
-			) : 'No Excercise Scheduled'}
+			{workout.exercises.length > 0
+				? workout.exercises.map((exercise, exerciseIndex) => (
+						<>
+							<WorkoutExerciseComponent
+								key={exercise.exerciseName}
+								exercise={exercise}
+								exerciseIndex={exerciseIndex}
+							/>
+						</>
+					))
+				: "No Excercise Scheduled"}
 		</section>
 	);
 }
