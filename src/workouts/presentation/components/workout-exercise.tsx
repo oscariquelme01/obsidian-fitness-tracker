@@ -5,6 +5,7 @@ import { Icon } from "shared/presentation/components/Icon";
 import { useWorkoutActions } from "../workout-actions-context";
 import { ContextMenu } from "shared/presentation/components/Context-menu";
 import { Modal } from "shared/presentation/components/Modal";
+import { ExerciseInput } from "exercises/presentation/components/ExerciseInput";
 
 interface Props {
 	exercise: WorkoutExercise;
@@ -14,6 +15,7 @@ interface Props {
 export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 	const { updateWorkout } = useWorkoutActions();
 	const [swapExerciseModalOpen, setSwapExerciseModalOpen] = useState(false);
+	const [exerciseSearch, setExerciseSearch] = useState("");
 
 	function addSet() {
 		const newSet: WorkoutSet = {
@@ -47,6 +49,26 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 				return currentExerciseIndex !== exerciseIndex;
 			}),
 		}));
+	}
+
+	function swapExercise(exerciseName: string) {
+		updateWorkout((workout) => ({
+			...workout,
+			exercises: workout.exercises.map((currentExercise, currentExerciseIndex) => {
+				if (currentExerciseIndex !== exerciseIndex) {
+					return currentExercise;
+				}
+
+				return {
+					exerciseName,
+					prescription: "",
+					notes: "",
+					sets: [],
+				};
+			}),
+		}));
+		setExerciseSearch("");
+		setSwapExerciseModalOpen(false);
 	}
 
 	return (
@@ -86,7 +108,14 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 
 			{swapExerciseModalOpen && (
 				<Modal title="Swap exercise" onClose={() => setSwapExerciseModalOpen(false)}>
-					<p className="m-0 text-muted">Exercise search goes here.</p>
+					<ExerciseInput
+						ariaLabel="Search exercises"
+						className="w-full"
+						placeholder="Search exercises"
+						value={exerciseSearch}
+						onChange={setExerciseSearch}
+						onSelect={swapExercise}
+					/>
 				</Modal>
 			)}
 
