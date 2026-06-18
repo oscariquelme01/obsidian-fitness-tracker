@@ -1,3 +1,5 @@
+const ctpColor = (name) => `rgba(var(--ctp-${name}), <alpha-value>)`;
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: ["./src/**/*.{ts,tsx}"],
@@ -5,7 +7,50 @@ module.exports = {
 		preflight: false,
 	},
 	theme: {
-		extend: {},
+		extend: {
+			colors: {
+				primary: "var(--background-primary)",
+				"primary-alt": "var(--background-primary-alt)",
+				secondary: "var(--background-secondary)",
+				"secondary-alt": "var(--background-secondary-alt)",
+				border: "var(--background-modifier-border)",
+				accent: "var(--interactive-accent)",
+				"accent-hover": "var(--interactive-accent-hover)",
+				text: "var(--text-normal)",
+				muted: "var(--text-muted)",
+				faint: "var(--text-faint)",
+				"text-accent": "var(--text-accent)",
+				"text-accent-hover": "var(--text-accent-hover)",
+				ctp: {
+					rosewater: ctpColor("rosewater"),
+					flamingo: ctpColor("flamingo"),
+					pink: ctpColor("pink"),
+					mauve: ctpColor("mauve"),
+					red: ctpColor("red"),
+					maroon: ctpColor("maroon"),
+					peach: ctpColor("peach"),
+					yellow: ctpColor("yellow"),
+					green: ctpColor("green"),
+					teal: ctpColor("teal"),
+					sky: ctpColor("sky"),
+					sapphire: ctpColor("sapphire"),
+					blue: ctpColor("blue"),
+					lavender: ctpColor("lavender"),
+					text: ctpColor("text"),
+					subtext1: ctpColor("subtext1"),
+					subtext0: ctpColor("subtext0"),
+					overlay2: ctpColor("overlay2"),
+					overlay1: ctpColor("overlay1"),
+					overlay0: ctpColor("overlay0"),
+					surface2: ctpColor("surface2"),
+					surface1: ctpColor("surface1"),
+					surface0: ctpColor("surface0"),
+					base: ctpColor("base"),
+					mantle: ctpColor("mantle"),
+					crust: ctpColor("crust"),
+				},
+			},
+		},
 	},
 	plugins: [],
 };

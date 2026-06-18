@@ -1,5 +1,5 @@
 import { watch } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import postcss from "postcss";
@@ -43,6 +43,7 @@ export async function buildStyles() {
 	]).process(sourceStyles, { from: sourceFile, to: outputFile });
 	const styles = result.css;
 
+	await mkdir(path.dirname(outputFile), { recursive: true });
 	await writeFile(
 		outputFile,
 		`/* Generated from ${sourceFile}. Do not edit directly. */\n\n${styles}\n`,

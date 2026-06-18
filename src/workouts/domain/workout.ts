@@ -14,8 +14,11 @@ export interface WorkoutExercise {
 
 export interface WorkoutSet {
 	completed: boolean;
+	type?: WorkoutSetType;
 	weight: string;
 	reps: string;
 	rpe: string;
 	notes: string;
 }
+
+export type WorkoutSetType = "failure" | "normal" | "warmup";

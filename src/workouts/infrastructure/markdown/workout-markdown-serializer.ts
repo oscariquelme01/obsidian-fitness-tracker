@@ -35,5 +35,7 @@ ${exercise.sets.map(serializeSet).join("\n")}
 }
 
 function serializeSet(set: WorkoutSet, index: number): string {
-	return `- [${set.completed ? "x" : " "}] Set ${index + 1}: weight=${set.weight} reps=${set.reps} rpe=${set.rpe} notes=${set.notes}`;
+	const setType = set.type && set.type !== "normal" ? ` type=${set.type}` : "";
+
+	return `- [${set.completed ? "x" : " "}] Set ${index + 1}: weight=${set.weight} reps=${set.reps} rpe=${set.rpe}${setType} notes=${set.notes}`;
 }

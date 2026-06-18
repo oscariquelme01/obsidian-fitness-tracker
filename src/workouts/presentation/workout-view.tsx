@@ -4,7 +4,7 @@ import { WorkoutComponent } from "./components/workout";
 import { TextFileView, WorkspaceLeaf } from "obsidian";
 import { parseWorkout } from "../infrastructure/markdown/workout-markdown-parser";
 import { serializeWorkout } from "../infrastructure/markdown/workout-markdown-serializer";
-import { Workout } from "../domain/workout";
+import { Workout, WorkoutSetType } from "../domain/workout";
 import { Root, createRoot } from "react-dom/client";
 
 export const WORKOUT_VIEW_TYPE = "fitness-workout";
@@ -58,13 +58,51 @@ export class WorkoutView extends TextFileView {
 	private renderReact(): void {
 		if (!this.root) {
 			this.reactContainerEl = this.contentEl.createDiv();
+			this.reactContainerEl.addClasses(['flex', 'items-center', 'flex-col', 'justify-center'])
 			this.root = createRoot(this.reactContainerEl);
 		}
 
 		this.root?.render(
 			<StrictMode>
-				<WorkoutComponent workout={this.workout} />
+				<WorkoutComponent
+					workout={this.workout}
+					onSetCompletedChange={(exerciseIndex, setIndex, completed) => {
+						this.updateSet(exerciseIndex, setIndex, { completed });
+					}}
+					onSetTypeChange={(exerciseIndex, setIndex, type) => {
+						this.updateSet(exerciseIndex, setIndex, { type });
+					}}
+				/>
 			</StrictMode>
 		);
+	}
+
+	private updateSet(
+		exerciseIndex: number,
+		setIndex: number,
+		changes: { completed?: boolean; type?: WorkoutSetType },
+	): void {
+		if (!this.workout) {
+			return;
+		}
+
+		this.workout = {
+			...this.workout,
+			exercises: this.workout.exercises.map((exercise, currentExerciseIndex) => {
+				if (currentExerciseIndex !== exerciseIndex) {
+					return exercise;
+				}
+
+				return {
+					...exercise,
+					sets: exercise.sets.map((set, currentSetIndex) => {
+						return currentSetIndex === setIndex ? { ...set, ...changes } : set;
+					}),
+				};
+			}),
+		};
+		this.rawData = serializeWorkout(this.workout);
+		this.requestSave();
+		this.renderReact();
 	}
 }

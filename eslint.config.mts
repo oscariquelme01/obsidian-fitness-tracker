@@ -34,6 +34,7 @@ export default tseslint.config(
 		"node_modules",
 		"dist",
 		".test-build",
+		"tests/test-vault/.obsidian",
 		"esbuild.config.mjs",
 		"eslint.config.js",
 		"version-bump.mjs",

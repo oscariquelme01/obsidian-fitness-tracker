@@ -2,6 +2,7 @@ import {
 	Workout,
 	WorkoutExercise,
 	WorkoutSet,
+	WorkoutSetType,
 } from "../../domain/workout";
 
 interface WorkoutMarkdownFrontmatter {
@@ -103,17 +104,28 @@ function parseFrontmatter(lines: string[]): WorkoutMarkdownFrontmatter {
 }
 
 function parseSetLine(line: string): WorkoutSet | null {
-	const match = line.match(/^[-*]\s+(?:\[([ xX])\]\s+)?Set\s+\d+:\s*weight=(.*?)\s+reps=(.*?)\s+rpe=(.*?)\s+notes=(.*)$/i);
+	const match = line.match(/^[-*]\s+(?:\[([ xX])\]\s+)?Set\s+\d+:\s*weight=(.*?)\s+reps=(.*?)\s+rpe=(.*?)(?:\s+type=(normal|warmup|failure))?\s+notes=(.*)$/i);
 
 	if (!match) {
 		return null;
 	}
+
+	const type = parseSetType(match[5]);
 
 	return {
 		completed: match[1]?.toLowerCase() === "x",
 		weight: match[2]?.trim() || "",
 		reps: match[3]?.trim() || "",
 		rpe: match[4]?.trim() || "",
-		notes: match[5]?.trim() || "",
+		...(type ? { type } : {}),
+		notes: match[6]?.trim() || "",
 	};
+}
+
+function parseSetType(value: string | undefined): WorkoutSetType | undefined {
+	if (value === "failure" || value === "normal" || value === "warmup") {
+		return value;
+	}
+
+	return undefined;
 }
