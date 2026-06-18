@@ -1,5 +1,6 @@
 import type { WorkoutExercise } from "workouts/domain/workout";
 import { WorkoutSetRows } from "./workout-sets";
+import { Icon } from "shared/presentation/components/Icon";
 
 interface Props {
 	exercise: WorkoutExercise;
@@ -17,7 +18,10 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 					</div>
 				</div>
 
-				<div>...</div>
+				<button className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent">
+					<Icon name="more-vertical"/>
+
+				</button>
 			</div>
 			<table className="w-full">
 				<thead>
@@ -38,7 +42,7 @@ export function WorkoutExerciseComponent({ exercise, exerciseIndex }: Props) {
 				</tbody>
 			</table>
 			<div className="flex w-full items-center justify-center">
-				<button className="rounded-full p-3">+</button>
+				<button className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent"><Icon name="plus"/></button>
 			</div>
 		</div>
 	);

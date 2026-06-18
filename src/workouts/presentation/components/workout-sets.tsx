@@ -3,6 +3,7 @@ import { ContextMenu } from "shared/presentation/components/Context-menu";
 import type { ComponentPropsWithoutRef } from "react";
 import type { WorkoutSet, WorkoutSetType } from "workouts/domain/workout";
 import { useWorkoutActions } from "../workout-actions-context";
+import { Icon } from "shared/presentation/components/Icon";
 
 interface Props {
 	sets: WorkoutSet[];
@@ -46,33 +47,38 @@ export function WorkoutSetRows({ sets, exerciseIndex }: Props) {
 	}
 
 	return (
-			<>
-				{sets.map((set, index) => (
-					<tr key={index}>
-						<th className="text-center" scope="row">
-							<WorkoutSetTypeMenu
-								setNumber={index + 1}
-								type={set.type || "normal"}
-								onChange={(type) => updateSet(index, { type })}
-							/>
-						</th>
-						<td className="text-center">-</td>
-						<td className="text-center">{set.weight || "-"}</td>
-						<td className="text-center">{set.reps || "-"}</td>
-						<td className="text-center">
-							<input
-								type="checkbox"
-								checked={set.completed}
-								onChange={(event) => {
-									updateSet(index, {
-										completed: event.currentTarget.checked,
-									});
-								}}
-							/>
-						</td>
-					</tr>
-				))}
-			</>
+		<>
+			{sets.map((set, index) => (
+				<tr key={index}>
+					<th className="text-center" scope="row">
+						<WorkoutSetTypeMenu
+							setNumber={index + 1}
+							type={set.type || "normal"}
+							onChange={(type) => updateSet(index, { type })}
+						/>
+					</th>
+					<td className="text-center">-</td>
+					<td className="text-center">{set.weight || "-"}</td>
+					<td className="text-center">{set.reps || "-"}</td>
+					<td className="text-center">
+						<input
+							type="checkbox"
+							checked={set.completed}
+							onChange={(event) => {
+								updateSet(index, {
+									completed: event.currentTarget.checked,
+								});
+							}}
+						/>
+					</td>
+					<td>
+						<button className="!border-0 !bg-transparent !shadow-none hover:!bg-transparent">
+							<Icon name="trash" className="text-ctp-red" />
+						</button>
+					</td>
+				</tr>
+			))}
+		</>
 	);
 }
 
